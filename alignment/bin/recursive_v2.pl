@@ -139,12 +139,10 @@ sub NWScore {
       $Ecur[$j] = $eval;
       $Fcur[$j] = $fval;
     }
-
     # pointer matrix
     if (!$rev) {
       $DP[$i] = [ @Scur ];   # store the full row i
     }
-
     # rotate in
     @Sprev = @Scur;
     @Eprev = @Ecur;
@@ -292,8 +290,114 @@ sub hirschberg {
   return ($A1.$A2, $B1.$B2);
 }
 
-### main: run and write outputs ###
+sub build_full_DP {
+    my ($Aref, $Bref) = @_;
+    my @Av = @$Aref;
+    my @Bv = @$Bref;
+    my ($m, $n) = (scalar(@Av), scalar(@Bv));
+    my $NEG = -1e9;
+
+    # rows of best/E/F
+    my (@Sprev, @Eprev, @Fprev, @Scur, @Ecur, @Fcur);
+    # full DP storage
+    my @DP;
+
+    # init row 0
+    $Sprev[0] = 0;
+    $Eprev[0] = $Fprev[0] = $NEG;
+    for my $j (1..$n) {
+        if ($mode eq 'global') {
+            $Sprev[$j] = -$gapopen - ($j-1)*$gapext;
+            $Eprev[$j] = $Sprev[$j] - $gapopen;
+            $Fprev[$j] = $NEG;
+        } else {
+            $Sprev[$j] = 0;
+            $Eprev[$j] = $Fprev[$j] = ($mode eq 'lcs' ? $NEG : 0);
+        }
+    }
+    # store row 0
+    $DP[0] = [ @Sprev ];
+
+    # fill rows 1..m
+    for my $i (1..$m) {
+        if ($mode eq 'global') {
+            $Scur[0] = -$gapopen - ($i-1)*$gapext;
+            $Ecur[0] = $NEG;
+            $Fcur[0] = $Scur[0] - $gapopen;
+        } else {
+            $Scur[0] = 0;
+            $Ecur[0] = $Fcur[0] = ($mode eq 'lcs' ? $NEG : 0);
+        }
+
+        for my $j (1..$n) {
+            # substitution or LCS
+            my $sub = $mode eq 'lcs'
+                    ? ($Av[$i-1] eq $Bv[$j-1] ? 1 : 0)
+                    : score($Av[$i-1], $Bv[$j-1]);
+
+            # M from (i-1,j-1)
+            my $bp = $Sprev[$j-1];
+            $bp = $Eprev[$j-1] if $Eprev[$j-1] > $bp;
+            $bp = $Fprev[$j-1] if $Fprev[$j-1] > $bp;
+            my $mval = $bp + $sub;
+            $mval = 0 if $mode eq 'local' && $mval < 0;
+
+            # E (gap in A; horiz)
+            my $eopen = $Scur[$j-1] - $gapopen;
+            my $eext  = $Ecur[$j-1] - $gapext;
+            my $eval  = $eopen >= $eext ? $eopen : $eext;
+            $eval = 0 if $mode eq 'local' && $eval < 0;
+
+            # F (gap in B; vert)
+            my $fopen = $Sprev[$j]   - $gapopen;
+            my $fext  = $Fprev[$j]   - $gapext;
+            my $fval  = $fopen >= $fext ? $fopen : $fext;
+            $fval = 0 if $mode eq 'local' && $fval < 0;
+
+            # best-of-three
+            my $sv = $mval;
+            $sv = $eval if $eval > $sv;
+            $sv = $fval if $fval > $sv;
+
+            $Scur[$j] = $sv;
+            $Ecur[$j] = $eval;
+            $Fcur[$j] = $fval;
+        }
+
+        # store row i
+        $DP[$i] = [ @Scur ];
+
+        # rotate
+        @Sprev = @Scur;
+        @Eprev = @Ecur;
+        @Fprev = @Fcur;
+    }
+
+    return \@DP;
+}
+
+
+sub write_DP_binary {
+    my ($file, $DP_ref) = @_;
+    open my $out, '>:raw', $file
+      or die "Cannot write $file: $!";
+    my $nrows = scalar @$DP_ref;
+    my $ncols = scalar @{ $DP_ref->[0] };
+    # header
+    print $out pack('N2', $nrows, $ncols);
+    # each row
+    for my $row (@$DP_ref) {
+      die "DP row length mismatch\n" unless @$row == $ncols;
+      print $out pack('l>*', @$row);
+    }
+    close $out;
+    warn "Wrote DP binary: $file ($nrows×$ncols cells)\n";
+}
+
 my ($AlnA,$AlnB) = hirschberg(\@A,\@B);
+# build & dump the full DP matrix
+my $DP_ref = build_full_DP(\@A, \@B);
+write_DP_binary("$out_pref.matrix.bin", $DP_ref);
 
 open my $FA, '>', "$out_pref.A.fa" or die $!;
 print $FA ">A_$mode\n$AlnA\n"; close $FA;
