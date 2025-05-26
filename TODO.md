@@ -3,11 +3,11 @@
 # markov
 [] integrate sequencing data 
 [] test hidden markov model 
-[] test markov chain model 
+[x] test markov chain model 
 [] test markov model with different parameters 
-[] test markov model with different data sets 
+[x] test markov model with different data sets 
 [] test markov model with different data types 
-[] test markov model with different data lengths 
+[x] test markov model with different data lengths 
 [] test markov model with different data distributions
 
 # seqtools
@@ -28,15 +28,16 @@
 [] similarity vector calculation 
  
 # alignment 
-[] ceck score and files 
-[] try plotting dotplot and line plot 
+[] check score and files 
+[x] try plotting dotplot 
+[] line plot 
 [] benchmark for different equences and gap scores 
 [] benchmark against c++ version 
 [] benchmark against other alignment tools 
-[] test with different scoring matrices 
+[x] test with different scoring matrices 
 [] test with different gap penalties 
-[] test with different sequences 
-[] test with different sequence lengths 
+[x] test with different sequences 
+[x] test with different sequence lengths 
 [] test with different sequence distributions 
 [] test with different sequence types
 

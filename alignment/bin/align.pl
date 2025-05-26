@@ -394,23 +394,49 @@ sub write_DP_binary {
     warn "Wrote DP binary: $file ($nrows×$ncols cells)\n";
 }
 
-my ($AlnA,$AlnB) = hirschberg(\@A,\@B);
-# build & dump the full DP matrix
-my $DP_ref = build_full_DP(\@A, \@B);
-write_DP_binary("$out_pref.matrix.bin", $DP_ref);
+my ($AlnA, $AlnB) =
+    $mode eq 'global'
+      ? small_align(\@A, \@B)
+      : hirschberg(\@A, \@B);
+
+# reverse the strings so they run
+# from position 0 --> end in the original orientation
+if ($mode eq 'global') {
+  $AlnA = reverse $AlnA;
+  $AlnB = reverse $AlnB;
+}
 
 open my $FA, '>', "$out_pref.A.fa" or die $!;
-print $FA ">A_$mode\n$AlnA\n"; close $FA;
+print $FA ">A_$mode\n$AlnA\n";
+close $FA;
+
 open my $FB, '>', "$out_pref.B.fa" or die $!;
-print $FB ">B_$mode\n$AlnB\n"; close $FB;
-open my $MF, '>', "$out_pref.matrix.tsv" or die $!;
+print $FB ">B_$mode\n$AlnB\n";
+close $FB;
+
+# build the full matrix (O(mn) memory!)
+my $DP_full = build_full_DP(\@A, \@B);
+
+# open TSV
+open my $MF, '>', "$out_pref.matrix.tsv"
+  or die "Cannot write $out_pref.matrix.tsv: $!";
+
+# header row: a leading empty cell, then B[0],B[1],…B[n-1]
 print $MF "\t", join("\t", @B), "\n";
-for my $i (0..$#DP) {
-  # row‐label: A[ i-1 ] for i>0, empty for i=0
+
+# each DP_full->[$i] is an arrayref of length n+1
+for my $i (0 .. $#{ $DP_full }) {
+  # row‐label: empty for i=0, otherwise A[i-1]
   my $label = $i ? $A[$i-1] : '';
-  print $MF join("\t", $label, @{ $DP[$i] }), "\n";
+  # join the scores
+  my @row = @{ $DP_full->[$i] };
+  print $MF $label, "\t", join("\t", @row), "\n";
 }
+
 close $MF;
+warn "Wrote full DP matrix to $out_pref.matrix.tsv\n";
+
+write_DP_binary("$out_pref.matrix.bin", $DP_full);
 
 my $final_score = NWScore(\@A,\@B)->[-1];
 print <<"EOF";
