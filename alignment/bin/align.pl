@@ -3,13 +3,21 @@ use strict;
 use warnings;
 use Getopt::Long;
 
+# ANSI color constants
+use constant {
+  COL_GREEN => "\e[32m",
+  COL_CYAN  => "\e[36m",
+  COL_RED   => "\e[31m",
+  COL_RESET => "\e[0m",
+};
+
 our @DP;
 ### command‐line options ###
 my ($mode, $matfile, $gapopen, $gapext, $out_pref) =
     ('global','',10,1,'align');
 GetOptions(
   'mode=s'    => \$mode,      # global | local | lcs
-  'matrix=s'  => \$matfile,   # your .mat file
+  'matrix=s'  => \$matfile,   # .mat file for scoring
   'gapopen=i' => \$gapopen,
   'gapext=i'  => \$gapext,
   'out=s'     => \$out_pref,
@@ -18,7 +26,7 @@ GetOptions(
 @ARGV==2 or die "Need exactly two sequence files\n";
 die "--matrix is required\n" unless $matfile;
 
-### slurp a FASTA or plain‐text sequence ###
+# Slurp a FASTA or plain‐text sequence
 sub slurp_seq {
   my $fn = shift;
   open my $fh, '<', $fn or die "Cannot open $fn: $!";
@@ -32,7 +40,7 @@ my ($seqA, $seqB) = map { slurp_seq($_) } @ARGV;
 my @A = split //, $seqA;
 my @B = split //, $seqB;
 
-### read a whitespace‐delimited substitution matrix ###
+# Read a whitespace‐delimited substitution matrix
 sub read_matrix {
   my ($file) = @_;
   open my $fh, '<', $file or die "Cannot open matrix '$file': $!";
@@ -66,7 +74,7 @@ sub read_matrix {
 my $MAT = read_matrix($matfile);
 sub score { $MAT->{ $_[0] }{ $_[1] } // 0 }
 
-### Gotoh DP in linear space: returns \@best_scores for A→B (or reversed) ###
+# Gotoh DP in linear space: returns \@best_scores for A --> B (or reversed)
 sub NWScore {
   my ($Aref,$Bref,$rev) = @_;
   my @Av = @$Aref;  my @Bv = @$Bref;
@@ -231,6 +239,7 @@ sub small_align {
       if ($F[$i][$j] > $best) { $best = $F[$i][$j]; $mat = 'F' }
       $P[$i][$j] = $mat;
     }
+      progress_bar($i, $m);
   }
 
   # endpoint
@@ -290,6 +299,7 @@ sub hirschberg {
   return ($A1.$A2, $B1.$B2);
 }
 
+# Build the full DP matrix for global/local/lcs alignment
 sub build_full_DP {
     my ($Aref, $Bref) = @_;
     my @Av = @$Aref;
@@ -376,7 +386,7 @@ sub build_full_DP {
     return \@DP;
 }
 
-
+# Write the DP matrix to a binary file
 sub write_DP_binary {
     my ($file, $DP_ref) = @_;
     open my $out, '>:raw', $file
@@ -394,17 +404,72 @@ sub write_DP_binary {
     warn "Wrote DP binary: $file ($nrows×$ncols cells)\n";
 }
 
-my ($AlnA, $AlnB) =
-    $mode eq 'global'
-      ? small_align(\@A, \@B)
-      : hirschberg(\@A, \@B);
+# Print the alignment in a colored format
+sub print_alignment {
+  my ($seqA, $seqB) = @_;
+  my $len = length $seqA;
+  my ($posA, $posB) = (0,0);
 
-# reverse the strings so they run
-# from position 0 --> end in the original orientation
-if ($mode eq 'global') {
-  $AlnA = reverse $AlnA;
-  $AlnB = reverse $AlnB;
+  for (my $off = 0; $off < $len; $off += 80) {
+    # extract up to 80‐column block
+    my $blockA = substr($seqA, $off, 80);
+    my $blockB = substr($seqB, $off, 80);
+    my $blen   = length $blockA;
+
+    # line for Seq A
+    printf "%6d ", $posA+1;
+    for (my $i=0; $i < $blen; $i++) {
+      my $a = substr($blockA,$i,1);
+      my $b = substr($blockB,$i,1);
+      # choose color
+      my $col = ($a eq '-' || $b eq '-') ? COL_RED
+              : ($a eq $b)              ? COL_GREEN
+                                        : COL_CYAN;
+      print $col, $a, COL_RESET;
+      $posA++ if $a ne '-';
+    }
+    print " ", $posA, "\n";
+
+    # line for Seq B
+    printf "%6d ", $posB+1;
+    for (my $i=0; $i < $blen; $i++) {
+      my $a = substr($blockA,$i,1);
+      my $b = substr($blockB,$i,1);
+      my $col = ($a eq '-' || $b eq '-') ? COL_RED
+              : ($a eq $b)              ? COL_GREEN
+                                        : COL_CYAN;
+      print $col, $b, COL_RESET;
+      $posB++ if $b ne '-';
+    }
+    print " ", $posB, "\n\n";
+  }
 }
+
+# Progress bar for long operations
+sub progress_bar {
+  my ($done, $total, $width) = @_;
+  $width ||= 40;
+  my $pct    = $total ? $done/$total : 0;
+  my $filled = int($pct * $width);
+  my $bar    = "[" . ("#" x $filled) . (" " x ($width-$filled)) . "]";
+  printf "\r%s %3.0f%%", $bar, $pct*100;
+}
+
+
+my ($AlnA, $AlnB);
+
+if ( $mode eq 'lcs' ) {
+  # LCS: we want the full gotoh on the whole matrix
+  ($AlnA, $AlnB) = small_align(\@A, \@B);
+}
+else {
+  # both global and local go through Hirschberg --> which will
+  # route down to small_align only when one seq has length 1
+  ($AlnA, $AlnB) = hirschberg(\@A, \@B);
+}
+
+print "\n\n";
+print_alignment($AlnA, $AlnB);
 
 open my $FA, '>', "$out_pref.A.fa" or die $!;
 print $FA ">A_$mode\n$AlnA\n";
@@ -423,7 +488,6 @@ open my $MF, '>', "$out_pref.matrix.tsv"
 
 # header row: a leading empty cell, then B[0],B[1],…B[n-1]
 print $MF "\t", join("\t", @B), "\n";
-
 # each DP_full->[$i] is an arrayref of length n+1
 for my $i (0 .. $#{ $DP_full }) {
   # row‐label: empty for i=0, otherwise A[i-1]
@@ -432,15 +496,31 @@ for my $i (0 .. $#{ $DP_full }) {
   my @row = @{ $DP_full->[$i] };
   print $MF $label, "\t", join("\t", @row), "\n";
 }
-
 close $MF;
 warn "Wrote full DP matrix to $out_pref.matrix.tsv\n";
 
 write_DP_binary("$out_pref.matrix.bin", $DP_full);
 
-my $final_score = NWScore(\@A,\@B)->[-1];
+# compute final score correctly
+my $final_score;
+if ( $mode eq 'local' ) {
+  # local: maximum over all cells
+  $final_score = -1e9;
+  for my $i (0..$#$DP_full) {
+    for my $j (0..$#{ $DP_full->[0] }) {
+      $final_score = $DP_full->[$i][$j]
+        if $DP_full->[$i][$j] > $final_score;
+    }
+  }
+} else {
+  # global (or lcs): bottom‐right corner
+  my $m = scalar(@A);
+  my $n = scalar(@B);
+  $final_score = $DP_full->[$m][$n];
+}
+
 print <<"EOF";
 Score   :  $final_score
 Output  :  $out_pref.A.fa, $out_pref.B.fa
-Completed $mode alignment.\n
+Completed $mode alignment.
 EOF
