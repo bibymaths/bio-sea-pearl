@@ -2,6 +2,9 @@
 use strict;
 use warnings;
 use Getopt::Long;
+use IO::Handle;
+STDOUT->autoflush(1);
+
 
 # ANSI color constants
 use constant {
@@ -151,12 +154,12 @@ sub NWScore {
     if (!$rev) {
       $DP[$i] = [ @Scur ];   # store the full row i
     }
+    progress_bar($i, $m);
     # rotate in
     @Sprev = @Scur;
     @Eprev = @Ecur;
     @Fprev = @Fcur;
   }
-
   return [ @Sprev ];
 }
 
@@ -239,7 +242,7 @@ sub small_align {
       if ($F[$i][$j] > $best) { $best = $F[$i][$j]; $mat = 'F' }
       $P[$i][$j] = $mat;
     }
-      progress_bar($i, $m);
+   progress_bar($i, $m);
   }
 
   # endpoint
@@ -386,6 +389,30 @@ sub build_full_DP {
     return \@DP;
 }
 
+# Longest Common Subsequence (LCS) extraction
+sub extract_lcs {
+  my ($a, $b) = @_;
+  my @runs;
+  my $cur = "";
+
+  for my $i (0 .. length($a)-1) {
+    my $ca = substr($a, $i, 1);
+    my $cb = substr($b, $i, 1);
+
+    if ($ca eq $cb and $ca ne '-') {
+      # still matching, accumulate
+      $cur .= $ca;
+    }
+    else {
+      # break in the run
+      push @runs, $cur if length $cur;
+      $cur = "";
+    }
+  }
+  push @runs, $cur if length $cur;   # final run
+  return @runs;
+}
+
 # Write the DP matrix to a binary file
 sub write_DP_binary {
     my ($file, $DP_ref) = @_;
@@ -451,11 +478,14 @@ sub progress_bar {
   $width ||= 40;
   my $pct    = $total ? $done/$total : 0;
   my $filled = int($pct * $width);
-  my $bar    = "[" . ("#" x $filled) . (" " x ($width-$filled)) . "]";
+  my $bar    = "[" . ("#" x $filled) . (" " x ($width - $filled)) . "]";
   printf "\r%s %3.0f%%", $bar, $pct*100;
+  if ($done >= $total) {
+    print "\n";
+  }
 }
 
-
+# Main execution starts here
 my ($AlnA, $AlnB);
 
 if ( $mode eq 'lcs' ) {
@@ -485,7 +515,6 @@ my $DP_full = build_full_DP(\@A, \@B);
 # open TSV
 open my $MF, '>', "$out_pref.matrix.tsv"
   or die "Cannot write $out_pref.matrix.tsv: $!";
-
 # header row: a leading empty cell, then B[0],B[1],…B[n-1]
 print $MF "\t", join("\t", @B), "\n";
 # each DP_full->[$i] is an arrayref of length n+1
@@ -498,6 +527,16 @@ for my $i (0 .. $#{ $DP_full }) {
 }
 close $MF;
 warn "Wrote full DP matrix to $out_pref.matrix.tsv\n";
+
+if ($mode eq 'lcs') {
+  my @runs = extract_lcs($AlnA, $AlnB);
+  my ($longest) = sort { length $b <=> length $a } @runs;
+  open my $LC, '>', "$out_pref.lcs.fa" or die $!;
+  print $LC ">${out_pref}_LCS\n";
+  print $LC "$longest\n";
+  close $LC;
+  warn "Wrote LCS runs to $out_pref.lcs.fa\n";
+}
 
 write_DP_binary("$out_pref.matrix.bin", $DP_full);
 
