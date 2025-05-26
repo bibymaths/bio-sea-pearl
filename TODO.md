@@ -31,14 +31,14 @@
 [] check score and files 
 [x] try plotting dotplot 
 [] line plot 
-[] benchmark for different equences and gap scores 
+[] benchmark for different sequences and gap scores 
 [] benchmark against c++ version 
 [] benchmark against other alignment tools 
 [x] test with different scoring matrices 
 [] test with different gap penalties 
 [x] test with different sequences 
 [x] test with different sequence lengths 
-[] test with different sequence distributions 
+[x] test with different sequence distributions 
 [] test with different sequence types
 
 
