@@ -3,41 +3,42 @@ use strict;
 use warnings;
 use Getopt::Long;
 
+our @DP;
 ### command‐line options ###
-my ($mode, $matfile, $gapopen, $gapext, $threads, $out_pref) =
-   ('global', '', 10, 1, 1, 'align');
+my ($mode, $matfile, $gapopen, $gapext, $out_pref) =
+    ('global','',10,1,'align');
 GetOptions(
-  'mode=s'    => \$mode,     # global | local | lcs
-  'matrix=s'  => \$matfile,  # e.g. blosum62.mat, md_20.mat, edna.mat
+  'mode=s'    => \$mode,      # global | local | lcs
+  'matrix=s'  => \$matfile,   # your .mat file
   'gapopen=i' => \$gapopen,
   'gapext=i'  => \$gapext,
-  'threads=i' => \$threads,  # ignored in this version
   'out=s'     => \$out_pref,
 ) or die "Usage: $0 --mode [global|local|lcs] --matrix MATRIX_FILE \\\n"
         . "           --gapopen N --gapext M --out PREFIX seqA seqB\n";
 @ARGV==2 or die "Need exactly two sequence files\n";
 die "--matrix is required\n" unless $matfile;
 
-### read & clean a sequence (FASTA or plain‐text) ###
+### slurp a FASTA or plain‐text sequence ###
 sub slurp_seq {
   my $fn = shift;
   open my $fh, '<', $fn or die "Cannot open $fn: $!";
   local $/; my $t = <$fh>;
   close $fh;
-  $t =~ s/>.*?\n//g;    # strip FASTA headers
-  $t =~ s/\s+//g;       # remove whitespace
+  $t =~ s/>.*?\R//g;
+  $t =~ s/\s+//g;
   return uc $t;
 }
 my ($seqA, $seqB) = map { slurp_seq($_) } @ARGV;
 my @A = split //, $seqA;
 my @B = split //, $seqB;
 
-### load substitution matrix ###
+### read a whitespace‐delimited substitution matrix ###
 sub read_matrix {
   my ($file) = @_;
   open my $fh, '<', $file or die "Cannot open matrix '$file': $!";
   my @cols;
-  # 1) find header row (first non‐comment line with ≥2 tokens)
+
+  # find header
   while (<$fh>) {
     next if /^\s*(?:\/\*|\*|\/\/|#|;)/;
     chomp;
@@ -47,36 +48,37 @@ sub read_matrix {
     last;
   }
   die "No header found in '$file'\n" unless @cols;
-  # 2) read data rows with exactly 1+@cols tokens
+
+  # read rows
   my %M;
   while (<$fh>) {
     next if /^\s*(?:\/\*|\*|\/\/|#|;)/;
     chomp;
     my @f = grep { length } split /\s+/, $_;
-    next unless @f == @cols+1;
+    next unless @f == @cols + 1;
     my $row = shift @f;
-    for my $i (0..$#cols) {
-      $M{$row}{$cols[$i]} = $f[$i];
-    }
+    $M{$row}{$cols[$_]} = $f[$_] for 0..$#cols;
   }
   close $fh;
   return \%M;
 }
+
 my $MAT = read_matrix($matfile);
 sub score { $MAT->{ $_[0] }{ $_[1] } // 0 }
 
-### Gotoh DP in linear space: returns \@scores for aligning A→B ###
+### Gotoh DP in linear space: returns \@best_scores for A→B (or reversed) ###
 sub NWScore {
-  my ($Aref, $Bref, $rev) = @_;
+  my ($Aref,$Bref,$rev) = @_;
   my @Av = @$Aref;  my @Bv = @$Bref;
   @Av = reverse @Av if $rev;
   @Bv = reverse @Bv if $rev;
-  my ($m,$n) = (scalar(@Av), scalar(@Bv));
+  my ($m,$n) = (scalar @Av, scalar @Bv);
   my $NEG = -1e9;
-  my (@Sprev, @Eprev, @Fprev, @Scur, @Ecur, @Fcur);
+  my (@Sprev,@Eprev,@Fprev,@Scur,@Ecur,@Fcur);
 
   # init row 0
-  $Sprev[0] = 0;  $Eprev[0] = $Fprev[0] = $NEG;
+  $Sprev[0] = 0;
+  $Eprev[0] = $Fprev[0] = $NEG;
   for my $j (1..$n) {
     if ($mode eq 'global') {
       $Sprev[$j] = -$gapopen - ($j-1)*$gapext;
@@ -88,7 +90,11 @@ sub NWScore {
     }
   }
 
-  # fill rows 1..m
+  if (!$rev) {
+    $DP[0] = [ @Sprev ];   # store scores for i=0
+  }
+
+  # fill rows
   for my $i (1..$m) {
     if ($mode eq 'global') {
       $Scur[0] = -$gapopen - ($i-1)*$gapext;
@@ -100,18 +106,16 @@ sub NWScore {
     }
 
     for my $j (1..$n) {
-      # substitution or LCS
+      # match/mismatch or LCS
       my $sub = $mode eq 'lcs'
               ? ($Av[$i-1] eq $Bv[$j-1] ? 1 : 0)
               : score($Av[$i-1], $Bv[$j-1]);
 
       # best of M/E/F from (i-1,j-1)
-      my $sp = $Sprev[$j-1];
-      my $ep = $Eprev[$j-1];
-      my $fp = $Fprev[$j-1];
-      my $best = $sp >= $ep ? ($sp >= $fp ? $sp : $fp)
-                            : ($ep >= $fp ? $ep : $fp);
-      my $mval = $best + $sub;
+      my $bp = $Sprev[$j-1];
+      $bp = $Eprev[$j-1] if $Eprev[$j-1] > $bp;
+      $bp = $Fprev[$j-1] if $Fprev[$j-1] > $bp;
+      my $mval = $bp + $sub;
       $mval = 0 if $mode eq 'local' && $mval < 0;
 
       # E (gap in A; horiz)
@@ -126,7 +130,7 @@ sub NWScore {
       my $fval  = $fopen >= $fext ? $fopen : $fext;
       $fval = 0 if $mode eq 'local' && $fval < 0;
 
-      # choose best-of-three
+      # best-of-three
       my $sv = $mval;
       $sv = $eval if $eval > $sv;
       $sv = $fval if $fval > $sv;
@@ -136,22 +140,27 @@ sub NWScore {
       $Fcur[$j] = $fval;
     }
 
-    # roll rows
+    # pointer matrix
+    if (!$rev) {
+      $DP[$i] = [ @Scur ];   # store the full row i
+    }
+
+    # rotate in
     @Sprev = @Scur;
     @Eprev = @Ecur;
     @Fprev = @Fcur;
   }
 
-  return [ @Sprev ];   # final row of scores
+  return [ @Sprev ];
 }
 
-### tiny full‐DP + traceback when m==1 or n==1 ###
+### full-DP + traceback when one dimension == 1 ###
 sub small_align {
   my ($Aref,$Bref) = @_;
   my @Av = @$Aref;  my @Bv = @$Bref;
-  my ($m,$n) = (scalar(@Av), scalar(@Bv));
+  my ($m,$n) = (scalar @Av, scalar @Bv);
   my $NEG = -1e9;
-  my (@M, @E, @F, @P);
+  my (@M,@E,@F,@P);
 
   # initialize
   for my $i (0..$m) {
@@ -160,8 +169,6 @@ sub small_align {
       $P[$i][$j] = '';
     }
   }
-
-  $M[0][0] = 0;
   $E[0][0] = $F[0][0] = $NEG;
   $P[0][0] = 'X';
 
@@ -194,37 +201,32 @@ sub small_align {
   # fill
   for my $i (1..$m) {
     for my $j (1..$n) {
-      # M‐cell
+      # M
       my $sub = $mode eq 'lcs'
-              ? ($Av[$i-1] eq $Bv[$j-1] ? 1 : 0)
+              ? ($Av[$i-1] eq $Bv[$j-1] ? 1:0)
               : score($Av[$i-1], $Bv[$j-1]);
-      my ($sp,$ep,$fp) = ($M[$i-1][$j-1], $E[$i-1][$j-1], $F[$i-1][$j-1]);
-      my $bp = $sp >= $ep ? ($sp >= $fp ? $sp : $fp)
-                         : ($ep >= $fp ? $ep : $fp);
-      my $mval = $bp + $sub;
-      my $pm   = ($bp == $sp ? 'M' : $bp == $ep ? 'E' : 'F');
-      if ($mode eq 'local' && $mval < 0) { $mval = 0; $pm = 'X' }
+      my $sp = $M[$i-1][$j-1];
+      $sp = $E[$i-1][$j-1] if $E[$i-1][$j-1] > $sp;
+      $sp = $F[$i-1][$j-1] if $F[$i-1][$j-1] > $sp;
+      my $mval = $sp + $sub;
+      if ($mode eq 'local' && $mval < 0) { $mval = 0 }
       $M[$i][$j] = $mval;
 
-      # E‐cell
+      # E
       my $eopen = $M[$i][$j-1] - $gapopen;
       my $eext  = $E[$i][$j-1] - $gapext;
-      my ($eval,$pe) = $eopen >= $eext
-                     ? ($eopen, 'M')
-                     : ($eext,  'E');
-      if ($mode eq 'local' && $eval < 0) { $eval = 0; $pe = 'X' }
+      my $eval  = $eopen >= $eext ? $eopen : $eext;
+      if ($mode eq 'local' && $eval < 0) { $eval = 0 }
       $E[$i][$j] = $eval;
 
-      # F‐cell
+      # F
       my $fopen = $M[$i-1][$j] - $gapopen;
       my $fext  = $F[$i-1][$j] - $gapext;
-      my ($fval,$pf) = $fopen >= $fext
-                     ? ($fopen, 'M')
-                     : ($fext,  'F');
-      if ($mode eq 'local' && $fval < 0) { $fval = 0; $pf = 'X' }
+      my $fval  = $fopen >= $fext ? $fopen : $fext;
+      if ($mode eq 'local' && $fval < 0) { $fval = 0 }
       $F[$i][$j] = $fval;
 
-      # pick best for pointer
+      # pointer
       my $best = $M[$i][$j];
       my $mat  = 'M';
       if ($E[$i][$j] > $best) { $best = $E[$i][$j]; $mat = 'E' }
@@ -249,50 +251,35 @@ sub small_align {
   }
 
   # traceback
-  my ($i,$j) = ($ei,$ej);
-  my ($Aout, $Bout) = ('','');
+  my ($i,$j)=($ei,$ej);
+  my ($Aout,$Bout)=('','');
   while ($i>0 || $j>0) {
     last if $mode eq 'local' && $P[$i][$j] eq 'X';
-    if ($P[$i][$j] eq 'M') {
-      $Aout .= $Av[$i-1]; $Bout .= $Bv[$j-1];
-      $i--; $j--;
-    }
-    elsif ($P[$i][$j] eq 'E') {
-      $Aout .= '-';        $Bout .= $Bv[$j-1];
-      $j--;
-    }
-    elsif ($P[$i][$j] eq 'F') {
-      $Aout .= $Av[$i-1];  $Bout .= '-';
-      $i--;
-    }
-    else {
-      last;
-    }
+    if    ($P[$i][$j] eq 'M') { $Aout.= $Av[$i-1]; $Bout.= $Bv[$j-1]; $i--, $j-- }
+    elsif ($P[$i][$j] eq 'E') { $Aout.= '-';       $Bout.= $Bv[$j-1];        $j--    }
+    elsif ($P[$i][$j] eq 'F') { $Aout.= $Av[$i-1]; $Bout.= '-';               $i--    }
+    else                       { last }
   }
-  return (scalar reverse $Aout, scalar reverse $Bout);
+  return (reverse $Aout, reverse $Bout);
 }
 
-### Hirschberg’s divide‐and‐conquer ###
+### Hirschberg divide‐and‐conquer ###
 sub hirschberg {
-  my ($Aref, $Bref) = @_;
+  my ($Aref,$Bref) = @_;
   my $m = @$Aref;
   my $n = @$Bref;
-  return ('-' x $n,     join('', @$Bref)) if $m == 0;
-  return (join('', @$Aref), '-' x $m)     if $n == 0;
-  return small_align($Aref, $Bref)        if $m == 1 || $n == 1;
+  return ('-' x $n, join('',@$Bref))        if $m==0;
+  return (join('',@$Aref), '-' x $m)        if $n==0;
+  return small_align($Aref,$Bref)           if $m==1 || $n==1;
 
-  my $i_mid = int($m / 2);
+  my $i_mid = int($m/2);
   my $L = NWScore([ @$Aref[0..$i_mid-1] ], $Bref, 0);
   my $R = NWScore([ @$Aref[$i_mid..$m-1] ], $Bref, 1);
 
-  my $best = -1e9;
-  my $j_mid = 0;
+  my ($best,$j_mid) = (-1e9,0);
   for my $j (0..$n) {
-    my $s = $L->[$j] + $R->[$n - $j];
-    if ($s > $best) {
-      $best = $s;
-      $j_mid = $j;
-    }
+    my $s = $L->[$j] + $R->[$n-$j];
+    if ($s > $best) { $best=$s; $j_mid=$j }
   }
 
   my ($A1,$B1) = hirschberg(
@@ -305,17 +292,25 @@ sub hirschberg {
   return ($A1.$A2, $B1.$B2);
 }
 
-### main: run alignment, write outputs ###
-my ($AlnA, $AlnB) = hirschberg(\@A, \@B);
+### main: run and write outputs ###
+my ($AlnA,$AlnB) = hirschberg(\@A,\@B);
 
 open my $FA, '>', "$out_pref.A.fa" or die $!;
 print $FA ">A_$mode\n$AlnA\n"; close $FA;
 open my $FB, '>', "$out_pref.B.fa" or die $!;
 print $FB ">B_$mode\n$AlnB\n"; close $FB;
+open my $MF, '>', "$out_pref.matrix.tsv" or die $!;
+print $MF "\t", join("\t", @B), "\n";
+for my $i (0..$#DP) {
+  # row‐label: A[ i-1 ] for i>0, empty for i=0
+  my $label = $i ? $A[$i-1] : '';
+  print $MF join("\t", $label, @{ $DP[$i] }), "\n";
+}
+close $MF;
 
-my $final_score = NWScore(\@A, \@B)->[-1];
+my $final_score = NWScore(\@A,\@B)->[-1];
 print <<"EOF";
-Completed [$mode] alignment.
-Score: $final_score
-Alignment → $out_pref.A.fa, $out_pref.B.fa
+Score   :  $final_score
+Output  :  $out_pref.A.fa, $out_pref.B.fa
+Completed $mode alignment.\n
 EOF
