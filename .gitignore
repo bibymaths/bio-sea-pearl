@@ -1,5 +1,5 @@
 .venv/
-
+data/
 .idea/
 *.iml
 *.ipr
