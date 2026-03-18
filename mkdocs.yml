@@ -1,15 +1,20 @@
 site_name: Bio Sea Pearl
-site_url: https://example.com/bio-sea-pearl
+site_url: https://bibymaths.github.io/bio-sea-pearl
 
 theme:
   name: material
 
 nav:
   - Home: index.md
-  - Alignment: alignment.md
-  - Markov: markov.md
-  - SeqTools: seqtools.md
-  - BWT & FM-index: bio_sea_pearl.md
+  - Overview:
+      - Architecture: architecture.md
+      - API Reference: api.md
+      - CLI Usage: cli.md
+  - Modules:
+      - Alignment: alignment.md
+      - Markov: markov.md
+      - SeqTools: seqtools.md
+      - BWT & FM-index: bio_sea_pearl.md
 
 markdown_extensions:
   - admonition

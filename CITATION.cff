@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+title: "Bio Sea Pearl"
+type: software
+authors:
+  - family-names: "Mishra"
+    given-names: "Abhinav"
+    email: "mishraabhinav@gmail.com"
+repository-code: "https://github.com/bibymaths/bio-sea-pearl"
+url: "https://github.com/bibymaths/bio-sea-pearl"
+abstract: >-
+  Bio Sea Pearl is a hybrid Python and Perl bioinformatics toolkit for
+  sequence alignment, Markov chain modeling, sequence utilities, and
+  FM-index-based search, exposed through a unified Python CLI and API.
+keywords:
+  - bioinformatics
+  - sequence-alignment
+  - markov-chains
+  - fm-index
+  - burrows-wheeler-transform
+  - sequence-analysis
+license: "MIT"
+version: "0.1.0"
+date-released: "2026-03-18"
+preferred-citation:
+  type: software
+  title: "Bio Sea Pearl"
+  authors:
+    - family-names: "Mishra"
+      given-names: "Abhinav"
+      email: "mishraabhinav@gmail.com"
+  version: "0.1.0"
+  date-released: "2026-03-18"
+  url: "https://github.com/bibymaths/bio-sea-pearl"
