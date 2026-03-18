@@ -1,0 +1,17 @@
+version: 1
+formatters:
+  simple:
+    format: "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: simple
+    stream: ext://sys.stdout
+loggers:
+  biosea:
+    level: INFO
+    handlers: [console]
+    propagate: no
+root:
+  level: INFO
+  handlers: [console]

@@ -2,7 +2,7 @@
 title: Overview
 ---
 
-# Bio Sea Pearl Toolkit Overview
+# BioSeaPearl Toolkit Overview
 
 This toolkit brings together a collection of Python and Perl utilities for sequence analysis and stochastic modelling.  It grew from practical needs in bioinformatics: aligning DNA or protein sequences, exploring Markov chain behaviour and building efficient text indexes.  As a result it includes both modern Python code and a mature body of Perl modules.
 
