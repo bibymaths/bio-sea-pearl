@@ -1,10 +1,3 @@
-Here is an **extended, production-quality README** section that integrates your content and adds the missing pieces (
-documentation link, GitHub Pages, architecture context, troubleshooting, and usage clarity).
-
-You can drop this directly into `README.md`.
-
----
-
 # Bio Sea Pearl
 
 A hybrid **Python + Perl bioinformatics toolkit** for sequence alignment, Markov modeling, sequence analysis, and
@@ -30,7 +23,11 @@ Extract the repository:
 
 ```bash
 unzip bio-sea-pearl-main-full.zip
-cd bio-sea-pearl-main
+cd bio-sea-pearl-main 
+
+or 
+
+git clone https://github.com/bibymaths/bio-sea-pearl.git
 ```
 
 ---
@@ -82,6 +79,12 @@ poetry run biosea align seq1.fa seq2.fa \
 
 * Matrix filenames are **case-sensitive**
 * Use `blosum62.mat`, not `BLOSUM62.mat`
+
+Optionally, you can generate dotplot in svg format:
+
+```bash
+perl alignment/bin/dotplot.pl align.matrix.tsv dotplot.svg 
+```
 
 ---
 
@@ -155,52 +158,6 @@ Example:
 curl -X POST http://localhost:8000/distance \
   -H "Content-Type: application/json" \
   -d '{"seq1": "kitten", "seq2": "sitting", "metric": "levenshtein"}'
-```
-
-Detailed schema: `docs/api.md`
-
----
-
-## Documentation (MkDocs)
-
-### Run locally
-
-```bash
-pip install mkdocs-material
-mkdocs serve
-```
-
-Open:
-
-```
-http://localhost:8000
-```
-
----
-
-### Deploy to GitHub Pages
-
-Docs are automatically deployed via GitHub Actions.
-
-#### Required setup:
-
-1. Push to `main`
-2. Go to:
-
-```
-Settings → Pages
-```
-
-3. Set:
-
-```
-Source: gh-pages branch
-```
-
-After deployment:
-
-```
-https://<username>.github.io/<repo>/
 ```
 
 ---
