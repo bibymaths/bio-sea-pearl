@@ -1,15 +1,18 @@
 [project]
 name = "bio-sea-pearl"
 version = "0.1.0"
-description = ""
-authors = [
-    {name = "bibymaths",email = "mishraabhinav@gmail.com"}
-]
+description = "Sequence analysis and bioinformatics utilities in Python and Perl."
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = [
+authors = [
+    { name = "Abhinav Mishra", email = "mishraabhinav@gmail.com" }
 ]
+dependencies = []
 
+[tool.poetry]
+packages = [
+    { include = "bio_sea_pearl", from = "src" }
+]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
