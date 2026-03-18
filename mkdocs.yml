@@ -1,8 +1,38 @@
 site_name: Bio Sea Pearl
-site_url: https://bibymaths.github.io/bio-sea-pearl
+site_url: https://bibymaths.github.io/bio-sea-pearl/
+
+repo_name: bibymaths/bio-sea-pearl
+repo_url: https://github.com/bibymaths/bio-sea-pearl
 
 theme:
   name: material
+
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.highlight
+    - search.share
+    - content.code.copy
+
+  icon:
+    repo: fontawesome/brands/github
+
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/bibymaths
+
+copyright: "© 2026 Abhinav Mishra — Bio Sea Pearl"
 
 nav:
   - Home: index.md
@@ -18,7 +48,10 @@ nav:
 
 markdown_extensions:
   - admonition
-  - codehilite
   - toc:
       permalink: true
   - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.snippets

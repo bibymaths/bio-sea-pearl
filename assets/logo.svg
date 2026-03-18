@@ -1,0 +1,77 @@
+<svg width="960" height="320" viewBox="0 0 960 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sea" x1="0" y1="0" x2="960" y2="320" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0F766E"></stop>
+      <stop offset="55%" stop-color="#0891B2"></stop>
+      <stop offset="100%" stop-color="#38BDF8"></stop>
+    </linearGradient>
+
+    <linearGradient id="waveFade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0EA5E9" stop-opacity="0.95"></stop>
+      <stop offset="100%" stop-color="#0F766E" stop-opacity="0.85"></stop>
+    </linearGradient>
+
+    <linearGradient id="pearl" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"></stop>
+      <stop offset="45%" stop-color="#E0F2FE"></stop>
+      <stop offset="100%" stop-color="#A5F3FC"></stop>
+    </linearGradient>
+
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="6" result="blur"></feGaussianBlur>
+      <feMerge>
+        <feMergeNode in="blur"></feMergeNode>
+        <feMergeNode in="SourceGraphic"></feMergeNode>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="320" rx="28" fill="#F8FAFC"></rect>
+
+  <!-- Icon group -->
+  <g transform="translate(52 40)">
+    <!-- Pearl -->
+    <circle cx="120" cy="120" r="84" fill="url(#pearl)" filter="url(#softGlow)"></circle>
+    <circle cx="96" cy="94" r="18" fill="#FFFFFF" opacity="0.8"></circle>
+    <circle cx="120" cy="120" r="84" stroke="url(#sea)" stroke-width="6"></circle>
+
+    <!-- Waves -->
+    <path d="M36 150C54 138 71 138 89 150C107 162 124 162 142 150C160 138 177 138 195 150" stroke="url(#waveFade)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"></path>
+    <path d="M48 172C63 162 79 162 94 172C109 182 125 182 140 172C155 162 171 162 186 172" stroke="url(#waveFade)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity="0.75"></path>
+
+    <!-- Minimal DNA -->
+    <g opacity="0.9" transform="translate(78 54)">
+      <path d="M0 0C18 12 18 28 0 40C-18 52 -18 68 0 80" stroke="#0F766E" stroke-width="3.5" stroke-linecap="round"></path>
+      <path d="M34 0C16 12 16 28 34 40C52 52 52 68 34 80" stroke="#38BDF8" stroke-width="3.5" stroke-linecap="round"></path>
+      <path d="M7 10H27" stroke="#14B8A6" stroke-width="2.6" stroke-linecap="round"></path>
+      <path d="M7 26H27" stroke="#14B8A6" stroke-width="2.6" stroke-linecap="round"></path>
+      <path d="M7 42H27" stroke="#14B8A6" stroke-width="2.6" stroke-linecap="round"></path>
+      <path d="M7 58H27" stroke="#14B8A6" stroke-width="2.6" stroke-linecap="round"></path>
+      <path d="M7 74H27" stroke="#14B8A6" stroke-width="2.6" stroke-linecap="round"></path>
+    </g>
+
+    <!-- Floating protein nodes -->
+    <g opacity="0.95">
+      <circle cx="55" cy="82" r="8" fill="#0EA5E9"></circle>
+      <circle cx="68" cy="69" r="5.5" fill="#14B8A6"></circle>
+      <circle cx="80" cy="80" r="6.5" fill="#06B6D4"></circle>
+      <path d="M55 82L68 69L80 80" stroke="#0891B2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+
+      <circle cx="176" cy="74" r="7" fill="#06B6D4"></circle>
+      <circle cx="192" cy="62" r="5.5" fill="#14B8A6"></circle>
+      <circle cx="204" cy="76" r="6" fill="#0EA5E9"></circle>
+      <path d="M176 74L192 62L204 76" stroke="#0891B2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    </g>
+  </g>
+
+  <!-- Wordmark -->
+  <g transform="translate(290 92)">
+    <text x="0" y="46" font-family="Inter, Arial, Helvetica, sans-serif" font-size="52" font-weight="700" letter-spacing="0.5" fill="#0F172A">
+      Bio Sea Pearl
+    </text>
+
+    <!-- Underline wave -->
+    <path d="M2 106C28 95 54 95 80 106C106 117 132 117 158 106C184 95 210 95 236 106C262 117 288 117 314 106" stroke="url(#sea)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"></path>
+  </g>
+</svg>

@@ -1,4 +1,4 @@
-# Bio Sea Pearl
+<img src="assets/logo.svg" width="700">
 
 A hybrid **Python + Perl bioinformatics toolkit** for sequence alignment, Markov modeling, sequence analysis, and
 FM-index–based search — unified under a single Python CLI and API.
@@ -92,7 +92,7 @@ perl alignment/bin/dotplot.pl align.matrix.tsv dotplot.svg
 
 ```bash
 poetry run biosea markov \
-  --fasta sample.fa \
+  --fasta seq1.fa \
   --length 100 \
   --start A \
   --order 1 \
@@ -136,7 +136,7 @@ poetry run biosea bwt search \
 
 ---
 
-## REST API
+## REST API - For Very Large Sequences
 
 Start the FastAPI server:
 

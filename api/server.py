@@ -32,6 +32,9 @@ from bio_sea_pearl.api import (
 
 app = FastAPI(title="Bio Sea Pearl API", version="0.1.0")
 
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the Bio Sea Pearl API! Go to /docs to test the endpoints."}
 
 class AlignRequest(BaseModel):
     fasta1: str
