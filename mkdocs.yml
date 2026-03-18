@@ -1,0 +1,19 @@
+site_name: Bio Sea Pearl
+site_url: https://example.com/bio-sea-pearl
+
+theme:
+  name: material
+
+nav:
+  - Home: index.md
+  - Alignment: alignment.md
+  - Markov: markov.md
+  - SeqTools: seqtools.md
+  - BWT & FM-index: bio_sea_pearl.md
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - toc:
+      permalink: true
+  - pymdownx.superfences
