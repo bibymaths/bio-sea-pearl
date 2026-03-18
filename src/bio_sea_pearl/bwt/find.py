@@ -10,6 +10,6 @@ pattern = "ACGTAG"
 l, r = idx.backward_search(pattern)
 positions = idx.sa[l:r]
 
-print(f"Found {r-l} hit{'s' if r-l != 1 else ''} for {pattern!r}:")
+print(f"Found {r - l} hit{'s' if r - l != 1 else ''} for {pattern!r}:")
 for pos in positions:
     print(pos)
