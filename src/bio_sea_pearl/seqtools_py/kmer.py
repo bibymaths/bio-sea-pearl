@@ -31,6 +31,6 @@ def counts(seq: str, k: int) -> Dict[str, int]:
     result: Dict[str, int] = {}
     end = n - k
     for i in range(end + 1):
-        kmer = seq[i : i + k]
+        kmer = seq[i: i + k]
         result[kmer] = result.get(kmer, 0) + 1
     return result

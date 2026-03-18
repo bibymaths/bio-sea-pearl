@@ -4,7 +4,7 @@ title: Command‑Line Interface
 
 # Command‑Line Interface
 
-The `biosea` CLI provides a unified entry point to the toolkit.  It is
+The `biosea` CLI provides a unified entry point to the toolkit. It is
 implemented using Typer and exposes several subcommands corresponding to
 the major domains of the project.
 
@@ -14,18 +14,18 @@ the major domains of the project.
 biosea [OPTIONS] COMMAND [ARGS]...
 ```
 
-Use `biosea --help` to view global options and a list of subcommands.  Each
+Use `biosea --help` to view global options and a list of subcommands. Each
 subcommand provides its own help message.
 
 ### `align`
 
-Align two sequences stored in FASTA files.  Example:
+Align two sequences stored in FASTA files. Example:
 
 ```
 biosea align seq1.fa seq2.fa --matrix alignment/scoring/BLOSUM62.mat --mode global
 ```
 
-Supported modes are `global`, `local` and `lcs`.  If no matrix is
+Supported modes are `global`, `local` and `lcs`. If no matrix is
 specified, the underlying script uses its default scoring system.
 
 ### `markov`

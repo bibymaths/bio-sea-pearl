@@ -13,10 +13,10 @@ from ..perl_wrappers import run_alignment
 
 
 def align_sequences(
-    fasta1: str,
-    fasta2: str,
-    matrix: Optional[str] = None,
-    mode: str = "global",
+        fasta1: str,
+        fasta2: str,
+        matrix: Optional[str] = None,
+        mode: str = "global",
 ) -> str:
     """Align two sequences stored in FASTA files.
 

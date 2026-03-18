@@ -7,6 +7,7 @@ Hamming distance between two equal‑length strings.  It raises a
 
 from __future__ import annotations
 
+
 def distance(a: str, b: str) -> int:
     """Return the number of positions at which the two strings differ.
 

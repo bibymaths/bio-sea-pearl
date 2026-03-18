@@ -30,7 +30,6 @@ from bio_sea_pearl.api import (
     search_fm_index,
 )
 
-
 app = FastAPI(title="Bio Sea Pearl API", version="0.1.0")
 
 
@@ -78,7 +77,8 @@ def align_endpoint(req: AlignRequest) -> dict:
 @app.post("/markov")
 def markov_endpoint(req: MarkovRequest) -> dict:
     try:
-        walk = generate_walk(req.fasta, req.length, start=req.start, order=req.order, method=req.method, pseudocount=req.pseudocount)
+        walk = generate_walk(req.fasta, req.length, start=req.start, order=req.order, method=req.method,
+                             pseudocount=req.pseudocount)
         return {"walk": walk.strip()}
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))

@@ -77,8 +77,8 @@ def kmer_counts_perl(seq: str, k: int) -> Dict[str, int]:
     # input may contain single quotes, we escape them by closing and reopening
     # single quotes in Perl.  However for simplicity we assume DNA/AA sequences.
     script = (
-        "my $counts = SeqTools::Kmer::count('" + seq + "', " + str(k) + ");"
-        "foreach my $kmer (sort keys %{$counts}) { print $kmer . '\t' . $counts->{$kmer} . '\n'; }"
+            "my $counts = SeqTools::Kmer::count('" + seq + "', " + str(k) + ");"
+                                                                            "foreach my $kmer (sort keys %{$counts}) { print $kmer . '\t' . $counts->{$kmer} . '\n'; }"
     )
     cmd = [
         "perl",

@@ -10,8 +10,8 @@ handlers:
 loggers:
   biosea:
     level: INFO
-    handlers: [console]
+    handlers: [ console ]
     propagate: no
 root:
   level: INFO
-  handlers: [console]
+  handlers: [ console ]

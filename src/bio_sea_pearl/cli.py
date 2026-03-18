@@ -34,20 +34,20 @@ app = typer.Typer(help="Bio Sea Pearl unified command-line interface")
 
 @app.command()
 def align(
-    fasta1: str = typer.Argument(..., help="Path to the first FASTA file."),
-    fasta2: str = typer.Argument(..., help="Path to the second FASTA file."),
-    matrix: str = typer.Option(
-        None,
-        "--matrix",
-        "-m",
-        help="Optional substitution matrix file (e.g. alignment/scoring/BLOSUM62.mat).",
-    ),
-    mode: str = typer.Option(
-        "global",
-        "--mode",
-        "-M",
-        help="Alignment mode: global, local or lcs.",
-    ),
+        fasta1: str = typer.Argument(..., help="Path to the first FASTA file."),
+        fasta2: str = typer.Argument(..., help="Path to the second FASTA file."),
+        matrix: str = typer.Option(
+            None,
+            "--matrix",
+            "-m",
+            help="Optional substitution matrix file (e.g. alignment/scoring/BLOSUM62.mat).",
+        ),
+        mode: str = typer.Option(
+            "global",
+            "--mode",
+            "-M",
+            help="Alignment mode: global, local or lcs.",
+        ),
 ) -> None:
     """Align two sequences stored in FASTA files."""
     result = align_sequences(fasta1, fasta2, matrix=matrix, mode=mode)
@@ -56,12 +56,12 @@ def align(
 
 @app.command()
 def markov(
-    fasta: str = typer.Option(..., help="Path to the FASTA file containing training sequences."),
-    length: int = typer.Option(..., help="Length of the random walk to generate."),
-    start: str = typer.Option("A", help="Starting state for the Markov chain."),
-    order: int = typer.Option(1, help="Order of the Markov chain."),
-    method: str = typer.Option("alias", help="Sampling method: alias or binsrch."),
-    pseudocount: int = typer.Option(0, help="Pseudocount added to each transition."),
+        fasta: str = typer.Option(..., help="Path to the FASTA file containing training sequences."),
+        length: int = typer.Option(..., help="Length of the random walk to generate."),
+        start: str = typer.Option("A", help="Starting state for the Markov chain."),
+        order: int = typer.Option(1, help="Order of the Markov chain."),
+        method: str = typer.Option("alias", help="Sampling method: alias or binsrch."),
+        pseudocount: int = typer.Option(0, help="Pseudocount added to each transition."),
 ) -> None:
     """Generate a random sequence from a Markov model built from a FASTA file."""
     walk = generate_walk(fasta, length, start=start, order=order, method=method, pseudocount=pseudocount)
@@ -108,8 +108,8 @@ app.add_typer(bwt_app, name="bwt")
 
 @bwt_app.command()
 def search(
-    sequence: str = typer.Option(..., help="Sequence to build the FM‑index from."),
-    pattern: str = typer.Option(..., help="Pattern to search for."),
+        sequence: str = typer.Option(..., help="Sequence to build the FM‑index from."),
+        pattern: str = typer.Option(..., help="Pattern to search for."),
 ) -> None:
     """Search for a pattern in a sequence using the FM‑index and return positions."""
     index = build_fm_index(sequence)

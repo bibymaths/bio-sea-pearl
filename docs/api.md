@@ -5,7 +5,7 @@ title: REST API
 # REST API
 
 The project includes an optional FastAPI service which exposes the toolkit as
-a web API.  The server is defined in `api/server.py` and can be launched
+a web API. The server is defined in `api/server.py` and can be launched
 using Uvicorn:
 
 ```
@@ -14,12 +14,12 @@ uvicorn api.server:app --reload
 
 ## Endpoints
 
-All endpoints accept JSON payloads and return JSON responses.  Errors are
+All endpoints accept JSON payloads and return JSON responses. Errors are
 reported with appropriate HTTP status codes.
 
 ### `POST /align`
 
-Align two sequences from FASTA files.  The request body:
+Align two sequences from FASTA files. The request body:
 
 ```json
 {
@@ -40,7 +40,7 @@ Returns:
 
 ### `POST /markov`
 
-Generate a random walk from sequences in a FASTA file.  Request:
+Generate a random walk from sequences in a FASTA file. Request:
 
 ```json
 {
@@ -63,7 +63,7 @@ Returns:
 
 ### `POST /distance`
 
-Compute the Hamming or Levenshtein distance between two strings.  Set
+Compute the Hamming or Levenshtein distance between two strings. Set
 `metric` to `hamming` or `levenshtein`.
 
 ```json
@@ -84,7 +84,7 @@ Returns:
 
 ### `POST /kmer`
 
-Compute k‑mer counts for a sequence.  Request:
+Compute k‑mer counts for a sequence. Request:
 
 ```json
 {
@@ -108,7 +108,7 @@ Returns a mapping of k‑mers to counts:
 
 ### `POST /bwt/search`
 
-Search for a pattern using an FM‑index.  The sequence is indexed on the fly.
+Search for a pattern using an FM‑index. The sequence is indexed on the fly.
 
 ```json
 {

@@ -17,12 +17,12 @@ def _repo_root() -> Path:
 
 
 def run_markov_walk(
-    fasta: str,
-    length: int,
-    start: str = "A",
-    order: int = 1,
-    method: str = "alias",
-    pseudocount: int = 0,
+        fasta: str,
+        length: int,
+        start: str = "A",
+        order: int = 1,
+        method: str = "alias",
+        pseudocount: int = 0,
 ) -> str:
     """Generate a random walk from a Markov model built from a FASTA file.
 

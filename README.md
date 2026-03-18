@@ -1,60 +1,322 @@
-To get the project running:
+Here is an **extended, production-quality README** section that integrates your content and adds the missing pieces (
+documentation link, GitHub Pages, architecture context, troubleshooting, and usage clarity).
 
-1. **Unpack** the ZIP you downloaded. You should see a `bio-sea-pearl-main` directory containing the source code, tests, documentation, and configuration files.
+You can drop this directly into `README.md`.
 
-2. **Install dependencies**. The project uses Python≥3.13 and Poetry for dependency management. From inside the `bio-sea-pearl-main` directory:
+---
 
-   ```bash
-   pip install poetry   # if you don’t already have Poetry
-   poetry install       # installs the package and its dependencies
-   ```
+# Bio Sea Pearl
 
-   If you prefer plain `pip`, you can run `pip install .`, but Poetry simplifies handling the lockfile.
+A hybrid **Python + Perl bioinformatics toolkit** for sequence alignment, Markov modeling, sequence analysis, and
+FM-index–based search — unified under a single Python CLI and API.
 
-3. **Run the command‑line tool**. Poetry installs an entry point named `biosea`. Get help:
+---
 
-   ```bash
-   poetry run biosea --help
-   ```
+## Documentation
 
-   Example commands:
+* 📘 **Live Docs (GitHub Pages)**
+  `https://<your-username>.github.io/<repo-name>/`
 
-   * Align two FASTA files:
+* 📂 Local Docs
+  Located in `docs/`
 
-     ```bash
-     poetry run biosea align seq1.fa seq2.fa --matrix alignment/scoring/blosum62.mat --mode global
-     ```
-   * Generate a Markov random walk:
+---
 
-     ```bash
-     poetry run biosea markov --fasta sample.fa --length 100 --start A --order 1 --method alias
-     ```
-   * Sequence utilities:
+## Quick Start
 
-     ```bash
-     poetry run biosea seqtools hamming ACGT AGGT       # Hamming distance
-     poetry run biosea seqtools levenshtein kitten sitting  # Levenshtein distance
-     poetry run biosea seqtools kmer ACGTACGT --k 3     # k‑mer counts in JSON
-     ```
-   * BWT/FM‑index search:
+### 1. Unpack
 
-     ```bash
-     poetry run biosea bwt search --sequence ACGTACGT --pattern CGT
-     ```
+Extract the repository:
 
-4. **Run the REST API**. A FastAPI server lives in `api/server.py`. Launch it with Uvicorn:
+```bash
+unzip bio-sea-pearl-main-full.zip
+cd bio-sea-pearl-main
+```
 
-   ```bash
-   poetry run uvicorn api.server:app --reload
-   ```
+---
 
-   The API exposes endpoints such as `/align`, `/markov`, `/distance`, `/kmer` and `/bwt/search`. Use a tool like `curl` or Postman to POST JSON to these endpoints; see `docs/api.md` for request/response formats.
+### 2. Install Dependencies
 
-5. **View the documentation**. The repository includes an MkDocs site. Serve it locally:
+This project uses **Python ≥ 3.13** and **Poetry**.
 
-   ```bash
-   pip install mkdocs-material
-   mkdocs serve
-   ```
+```bash
+pip install poetry
+poetry install
+```
 
-   Then browse to the local URL (typically `http://localhost:8000`) to read the tutorials, architecture overview, and API documentation.
+Alternative:
+
+```bash
+pip install .
+```
+
+---
+
+### 3. Run the CLI
+
+The unified CLI entrypoint is:
+
+```bash
+biosea
+```
+
+Get help:
+
+```bash
+poetry run biosea --help
+```
+
+---
+
+## CLI Usage
+
+### Alignment
+
+```bash
+poetry run biosea align seq1.fa seq2.fa \
+  --matrix alignment/scoring/blosum62.mat \
+  --mode global
+```
+
+⚠️ Notes:
+
+* Matrix filenames are **case-sensitive**
+* Use `blosum62.mat`, not `BLOSUM62.mat`
+
+---
+
+### Markov Chain
+
+```bash
+poetry run biosea markov \
+  --fasta sample.fa \
+  --length 100 \
+  --start A \
+  --order 1 \
+  --method alias
+```
+
+For higher-order models:
+
+```bash
+--order 2 --start AA
+```
+
+⚠️ Constraint:
+
+* `start` length must equal `order`
+
+---
+
+### Sequence Utilities
+
+```bash
+# Hamming distance
+poetry run biosea seqtools hamming ACGT AGGT
+
+# Levenshtein distance
+poetry run biosea seqtools levenshtein kitten sitting
+
+# k-mer counts
+poetry run biosea seqtools kmer ACGTACGT --k 3
+```
+
+---
+
+### BWT / FM-Index Search
+
+```bash
+poetry run biosea bwt search \
+  --sequence ACGTACGT \
+  --pattern CGT
+```
+
+---
+
+## REST API
+
+Start the FastAPI server:
+
+```bash
+poetry run uvicorn api.server:app --reload
+```
+
+Endpoints:
+
+* `/align`
+* `/markov`
+* `/distance`
+* `/kmer`
+* `/bwt/search`
+
+Example:
+
+```bash
+curl -X POST http://localhost:8000/distance \
+  -H "Content-Type: application/json" \
+  -d '{"seq1": "kitten", "seq2": "sitting", "metric": "levenshtein"}'
+```
+
+Detailed schema: `docs/api.md`
+
+---
+
+## Documentation (MkDocs)
+
+### Run locally
+
+```bash
+pip install mkdocs-material
+mkdocs serve
+```
+
+Open:
+
+```
+http://localhost:8000
+```
+
+---
+
+### Deploy to GitHub Pages
+
+Docs are automatically deployed via GitHub Actions.
+
+#### Required setup:
+
+1. Push to `main`
+2. Go to:
+
+```
+Settings → Pages
+```
+
+3. Set:
+
+```
+Source: gh-pages branch
+```
+
+After deployment:
+
+```
+https://<username>.github.io/<repo>/
+```
+
+---
+
+## Project Structure
+
+```
+src/bio_sea_pearl/
+├── cli.py                 # Unified CLI
+├── api/                   # Clean Python API layer
+├── perl_wrappers/         # Bridge to legacy Perl scripts
+├── seqtools_py/           # Python ports of core algorithms
+└── bwt/                   # Native Python FM-index
+
+alignment/                 # Legacy alignment tools
+markov/                    # Perl Markov models
+seqtools/                  # Perl sequence utilities
+api/server.py              # FastAPI layer
+docs/                      # MkDocs documentation
+tests/                     # Unit + integration tests
+```
+
+---
+
+## Architecture Overview
+
+The system is layered:
+
+```
+CLI / API
+   ↓
+Python API Layer
+   ↓
+Wrappers (subprocess)
+   ↓
+Perl + Python legacy tools
+```
+
+This design:
+
+* preserves legacy code
+* enables gradual Python migration
+* provides production-ready interfaces
+
+---
+
+## Running Tests
+
+```bash
+poetry run pytest
+```
+
+---
+
+## Troubleshooting
+
+### Alignment fails
+
+* Check matrix path:
+
+  ```
+  alignment/scoring/blosum62.mat
+  ```
+* Avoid uppercase filenames
+
+---
+
+### Markov fails
+
+Error:
+
+```
+Start state must be length N
+```
+
+Fix:
+
+```
+--order N → start string length must be N
+```
+
+---
+
+### CLI not found
+
+```bash
+poetry run biosea --help
+```
+
+or:
+
+```bash
+pip install -e .
+biosea --help
+```
+
+---
+
+## Future Work
+
+See:
+
+```
+TODO.md
+```
+
+Includes:
+
+* Full Python migration
+* Performance optimization
+* Parallel execution
+* GPU acceleration
+* API scaling
+
+---
+
+## License
+
+This project is licensed under the MIT License. See `LICENSE` for details.

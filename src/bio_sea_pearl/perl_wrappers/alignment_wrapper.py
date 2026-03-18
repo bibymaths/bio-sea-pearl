@@ -28,10 +28,10 @@ def _repo_root() -> Path:
 
 
 def run_alignment(
-    fasta1: str,
-    fasta2: str,
-    matrix: Optional[str] = None,
-    mode: str = "global",
+        fasta1: str,
+        fasta2: str,
+        matrix: Optional[str] = None,
+        mode: str = "global",
 ) -> str:
     """Run the sequence alignment on two FASTA files and return the result.
 

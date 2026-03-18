@@ -15,6 +15,7 @@ try:
     from ..seqtools_py.hamming import distance as _hamming_py
     from ..seqtools_py.levenshtein import distance as _levenshtein_py
     from ..seqtools_py.kmer import counts as _kmer_py
+
     _PY_PORT_AVAILABLE = True
 except Exception:
     _PY_PORT_AVAILABLE = False

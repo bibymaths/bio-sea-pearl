@@ -7,6 +7,7 @@ programming algorithm that runs in O(n*m) time and O(min(n,m)) space.
 
 from __future__ import annotations
 
+
 def distance(s: str, t: str) -> int:
     """Compute the Levenshtein distance between two strings.
 
