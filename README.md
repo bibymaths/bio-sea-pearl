@@ -8,7 +8,7 @@ FM-index–based search — unified under a single Python CLI and API.
 ## Documentation
 
 * 📘 **Live Docs (GitHub Pages)**
-  `https://<your-username>.github.io/<repo-name>/`
+  `https://bibymaths.github.io/<repo-name>/`
 
 * 📂 Local Docs
   Located in `docs/`
