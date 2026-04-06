@@ -25,6 +25,7 @@ dependencies = [
     "uvicorn>=0.26.0",
     "pydantic>=2.0.0",
     "requests>=2.32.5",
+    "mkdocs-swagger-ui-tag>=0.8.0",
 ]
 
 [project.optional-dependencies]

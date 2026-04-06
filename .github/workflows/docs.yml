@@ -22,10 +22,23 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install docs dependencies
+      - name: Install docs and project dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install mkdocs mkdocs-material
+          pip install -e .
+          pip install mkdocs mkdocs-material mkdocs-swagger-ui-tag
+
+      - name: Generate OpenAPI schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from api.server import app
+
+          out = Path("docs/openapi.json")
+          out.write_text(json.dumps(app.openapi(), indent=2), encoding="utf-8")
+          print(f"Wrote {out}")
+          PY
 
       - name: Configure Git credentials
         run: |

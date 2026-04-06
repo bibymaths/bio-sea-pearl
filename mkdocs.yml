@@ -29,6 +29,11 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
 
+plugins:
+  - search
+  - swagger-ui-tag:
+      validatorUrl: none
+
 nav:
   - Home: index.md
   - Overview:
