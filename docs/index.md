@@ -2,7 +2,24 @@
 title: Overview
 ---
 
-# BioSeaPearl Toolkit Overview
+<div align="center">
+
+<img src="assets/logo.svg" width="300">
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19435099.svg)](https://doi.org/10.5281/zenodo.19435099)
+[![PyPI version](https://img.shields.io/pypi/v/bio-sea-pearl.svg)](https://pypi.org/project/bio-sea-pearl/)
+[![Python versions](https://img.shields.io/pypi/pyversions/bio-sea-pearl.svg)](https://pypi.org/project/bio-sea-pearl/)
+[![PyPI downloads](https://img.shields.io/pypi/dm/bio-sea-pearl.svg)](https://pypi.org/project/bio-sea-pearl/)
+[![GitHub release](https://img.shields.io/github/v/release/bibymaths/bio-sea-pearl)](https://github.com/bibymaths/bio-sea-pearl/releases)
+[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://bibymaths.github.io/bio-sea-pearl/)
+[![License](https://img.shields.io/github/license/bibymaths/bio-sea-pearl)](LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/bibymaths/bio-sea-pearl/release.yml?branch=main&label=release)](https://github.com/bibymaths/bio-sea-pearl/actions/workflows/release.yml)
+[![Docs workflow](https://img.shields.io/github/actions/workflow/status/bibymaths/bio-sea-pearl/docs.yml?branch=main&label=docs)](https://github.com/bibymaths/bio-sea-pearl/actions/workflows/docs.yml)
+[![GHCR](https://img.shields.io/badge/container-ghcr.io-blue)](https://github.com/bibymaths/bio-sea-pearl/pkgs/container/bio-sea-pearl)
+[![Docker pulls](https://img.shields.io/badge/docker-GHCR-blue)](https://github.com/bibymaths/bio-sea-pearl/pkgs/container/bio-sea-pearl)
+
+
+</div>
 
 This toolkit brings together a collection of Python and Perl utilities for sequence analysis and stochastic modelling.
 It grew from practical needs in bioinformatics: aligning DNA or protein sequences, exploring Markov chain behaviour and
@@ -23,6 +40,3 @@ The project is organised into a few high‑level components:
 * **Burrows–Wheeler Transform (BWT) and FM‑index** – pure Python implementations of suffix arrays, the BWT and the
   FM‑index are provided in `src/bio_sea_pearl/bwt`. These enable fast substring queries and serve as a foundation for
   compressed text indices.
-
-The long‑term goal is to unify these capabilities under a single Python interface while preserving the performance and
-features of the existing Perl code. See the updated roadmap in `TODO.md` for a detailed plan.

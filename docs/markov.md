@@ -2,8 +2,6 @@
 title: Markov Chains
 ---
 
-# Markov Chains
-
 The `markov` directory contains a set of Perl modules and scripts implementing first‑ and higher‑order Markov chain
 simulators. These tools make it easy to learn transition probabilities from sequence data and generate random walks or
 evaluate the fit of a model to observed data.

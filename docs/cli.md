@@ -2,8 +2,6 @@
 title: Command‑Line Interface
 ---
 
-# Command‑Line Interface
-
 The `biosea` CLI provides a unified entry point to the toolkit. It is
 implemented using Typer and exposes several subcommands corresponding to
 the major domains of the project.

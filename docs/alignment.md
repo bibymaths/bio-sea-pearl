@@ -2,8 +2,6 @@
 title: Alignment
 ---
 
-# Alignment
-
 The alignment module provides flexible dynamic‑programming algorithms for pairwise sequence alignment with separate gap
 opening and extension penalties. It supports global (Needleman–Wunsch), local (Smith–Waterman) and longest common
 subsequence (LCS) modes, and can utilise a variety of scoring matrices.

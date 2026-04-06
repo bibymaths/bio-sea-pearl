@@ -2,8 +2,6 @@
 title: SeqTools Library
 ---
 
-# SeqTools Library
-
 `seqtools` is a Perl collection of sequence and string utilities designed to support bioinformatics pipelines. Rather
 than reinventing core algorithms in every script, it exposes reusable modules for pattern searching, distance
 calculations and k‑mer analysis.

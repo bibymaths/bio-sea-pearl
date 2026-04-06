@@ -2,8 +2,6 @@
 title: Architecture
 ---
 
-# Architecture
-
 The Bio Sea Pearl project is intentionally modular to accommodate both
 Python and Perl code. The layers of the architecture are outlined below.
 
