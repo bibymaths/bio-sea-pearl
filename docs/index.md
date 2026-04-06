@@ -4,8 +4,6 @@ title: Bio Sea Pearl
 
 <div style="text-align: center;">
 
-<img src="../assets/logo.svg" width="260" alt="Bio Sea Pearl">
-
 <p>
 <a href="https://doi.org/10.5281/zenodo.19435099"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.19435099.svg" alt="DOI"></a>
 <a href="https://pypi.org/project/bio-sea-pearl/"><img src="https://img.shields.io/pypi/v/bio-sea-pearl.svg" alt="PyPI version"></a>
