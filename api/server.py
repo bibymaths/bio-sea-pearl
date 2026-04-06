@@ -93,6 +93,8 @@ def align_endpoint(req: AlignRequest) -> dict:
     tmp1: Path | None = None
     tmp2: Path | None = None
     try:
+        if not req.fasta1.strip().startswith(">") or not req.fasta2.strip().startswith(">"):
+            raise HTTPException(400, "Expected FASTA content (must start with '>')")
         tmp1 = _write_temp_fasta(req.fasta1)
         tmp2 = _write_temp_fasta(req.fasta2)
         result = align_sequences(str(tmp1), str(tmp2), matrix=req.matrix, mode=req.mode)
@@ -117,6 +119,8 @@ def markov_endpoint(req: MarkovRequest) -> dict:
     tmp: Path | None = None
     try:
         tmp = _write_temp_fasta(req.fasta)
+        if not req.fasta.strip().startswith(">"):
+            raise HTTPException(400, "Expected FASTA content (must start with '>')")
         walk = generate_walk(str(tmp), req.length, start=req.start, order=req.order, method=req.method,
                              pseudocount=req.pseudocount)
         return {"walk": walk.strip()}

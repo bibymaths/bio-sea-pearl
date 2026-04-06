@@ -23,6 +23,8 @@ import sys
 from pathlib import Path
 from typing import Optional
 
+from bio_sea_pearl.perl_wrappers.term_utils import strip_ansi
+
 
 def _repo_root() -> Path:
     """Return the repository root directory.
@@ -110,4 +112,4 @@ def run_alignment(
         ]
 
     result = subprocess.run(cmd, capture_output=True, text=True, cwd=str(root), check=True)
-    return result.stdout
+    return strip_ansi(result.stdout)

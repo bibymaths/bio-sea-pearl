@@ -11,6 +11,8 @@ import os
 import subprocess
 from pathlib import Path
 
+from bio_sea_pearl.perl_wrappers.term_utils import strip_ansi
+
 
 def _repo_root() -> Path:
     """Return the repository root directory.
@@ -76,4 +78,11 @@ def run_markov_walk(
     if pseudocount:
         cmd += ["--pseudocount", str(pseudocount)]
     result = subprocess.run(cmd, capture_output=True, text=True, cwd=str(root), check=True)
-    return result.stdout
+    output = result.stdout.strip().splitlines()
+
+    # keep only valid DNA lines
+    for line in reversed(output):
+        if set(line.strip()).issubset(set("ACGT")):
+            return line.strip()
+
+    raise RuntimeError("No valid Markov sequence found in output")
