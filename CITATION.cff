@@ -3,9 +3,10 @@ message: "If you use this software, please cite it using the metadata below."
 title: "Bio Sea Pearl"
 type: software
 authors:
-  - family-names: "Mishra"
-    given-names: "Abhinav"
-    email: "mishraabhinav@gmail.com"
+  - family-names: Mishra
+    given-names: Abhinav
+    orcid: "https://orcid.org/0009-0005-3179-7408"
+    affiliation: "Independent Researcher"
 repository-code: "https://github.com/bibymaths/bio-sea-pearl"
 url: "https://github.com/bibymaths/bio-sea-pearl"
 abstract: >-
@@ -21,7 +22,7 @@ keywords:
   - sequence-analysis
 license: "MIT"
 version: "0.1.0"
-date-released: "2026-03-18"
+date-released: "2026-04-06"
 preferred-citation:
   type: software
   title: "Bio Sea Pearl"
