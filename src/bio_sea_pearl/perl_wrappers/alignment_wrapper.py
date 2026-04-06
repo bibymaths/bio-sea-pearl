@@ -57,9 +57,16 @@ def run_alignment(
     Raises:
         subprocess.CalledProcessError: If the underlying command exits with
             a non-zero status.
-        FileNotFoundError: If neither the Python nor Perl align script exists.
+        FileNotFoundError: If neither the Python nor Perl align script exists,
+            or if the FASTA input files do not exist.
     """
     root = _repo_root()
+
+    # Validate that the input files exist to prevent arbitrary path injection.
+    for label, path_str in (("fasta1", fasta1), ("fasta2", fasta2)):
+        p = Path(path_str)
+        if not p.is_file():
+            raise FileNotFoundError(f"{label} file does not exist: {path_str}")
 
     # Resolve the matrix path; fall back to a bundled default when the
     # caller does not specify one.

@@ -54,6 +54,11 @@ def run_markov_walk(
     script = root / "markov" / "bin" / "randomwalk.pl"
     if not script.exists():
         raise FileNotFoundError(f"randomwalk.pl not found at {script}")
+
+    # Validate that the input file exists to prevent arbitrary path injection.
+    if not Path(fasta).is_file():
+        raise FileNotFoundError(f"FASTA file does not exist: {fasta}")
+
     cmd = [
         "perl",
         str(script),
