@@ -27,7 +27,7 @@ class TestHammingDistance:
         assert hamming_distance("", "") == 0
 
     def test_unequal_lengths_raises(self):
-        with pytest.raises((ValueError, Exception)):
+        with pytest.raises(ValueError):
             hamming_distance("ABC", "AB")
 
 
@@ -86,9 +86,9 @@ class TestKmerCounts:
         assert counts == {"AA": 3}
 
     def test_k_greater_than_length_raises(self):
-        with pytest.raises((ValueError, Exception)):
+        with pytest.raises(ValueError):
             kmer_counts("AC", 5)
 
     def test_k_zero_raises(self):
-        with pytest.raises((ValueError, Exception)):
+        with pytest.raises(ValueError):
             kmer_counts("ACGT", 0)

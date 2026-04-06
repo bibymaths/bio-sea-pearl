@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import os
 import subprocess
+import sys
 from pathlib import Path
 from typing import Optional
 
@@ -74,13 +75,15 @@ def run_alignment(
         mat_path = Path(matrix)
         if not mat_path.is_absolute():
             mat_path = root / mat_path
+        if not mat_path.is_file():
+            raise FileNotFoundError(f"Scoring matrix file does not exist: {mat_path}")
     else:
         mat_path = root / "alignment" / "scoring" / "blosum62.mat"
 
     align_py = root / "alignment" / "bin" / "align.py"
     if align_py.exists():
         cmd: list[str] = [
-            "python",
+            sys.executable,
             str(align_py),
             "--mode",
             mode,

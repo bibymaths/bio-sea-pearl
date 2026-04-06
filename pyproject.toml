@@ -50,6 +50,12 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/bio_sea_pearl"]
 
+[tool.hatch.build.targets.wheel.force-include]
+"api" = "api"
+"alignment" = "alignment"
+"markov" = "markov"
+"seqtools" = "seqtools"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]

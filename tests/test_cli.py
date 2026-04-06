@@ -12,6 +12,7 @@ def _run(*args: str) -> subprocess.CompletedProcess[str]:
         [sys.executable, "-m", "bio_sea_pearl.cli", *args],
         capture_output=True,
         text=True,
+        timeout=60,
     )
 
 

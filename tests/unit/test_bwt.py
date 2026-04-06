@@ -57,10 +57,11 @@ def test_dna_sequence_search():
     assert sorted(positions) == [1, 5, 9]
 
 
-def test_empty_pattern_returns_empty():
-    """An empty pattern should return an empty list (no match range)."""
-    idx = build_fm_index("banana")
+def test_empty_pattern_returns_all_positions():
+    """An empty pattern matches every position in the indexed string (including sentinel)."""
+    seq = "banana"
+    idx = build_fm_index(seq)
     positions = search_fm_index(idx, "")
-    # backward_search with empty pattern returns full range; positions will
-    # contain all suffix-array entries.  Accept either all positions or empty.
-    assert isinstance(positions, list)
+    # backward_search over an empty pattern returns the full suffix-array range,
+    # which spans all len(seq)+1 positions (the sentinel character adds one entry).
+    assert sorted(positions) == list(range(len(seq) + 1))

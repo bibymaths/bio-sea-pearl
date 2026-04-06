@@ -80,7 +80,8 @@ def test_kmer_k_equals_length():
 
 def test_kmer_invalid_k():
     resp = client.post("/kmer", json={"sequence": "AC", "k": 5})
-    assert resp.status_code == 500
+    assert resp.status_code == 400
+    assert "detail" in resp.json()
 
 
 # ── BWT / FM-index endpoint ──────────────────────────────────────
