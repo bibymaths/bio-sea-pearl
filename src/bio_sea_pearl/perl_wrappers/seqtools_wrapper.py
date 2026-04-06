@@ -1,19 +1,29 @@
 """Wrappers for SeqTools Perl modules.
 
 This module provides Python functions that call the existing SeqTools Perl
-implementations for Hamming distance, Levenshtein distance and k‑mer
-counts.  The functions invoke Perl one-liners using `subprocess.run` and
+implementations for Hamming distance, Levenshtein distance and k-mer
+counts.  The functions invoke Perl one-liners using ``subprocess.run`` and
 return the results as Python types.
 """
 
 from __future__ import annotations
 
+import os
 import subprocess
 from pathlib import Path
 from typing import Dict
 
 
 def _repo_root() -> Path:
+    """Return the repository root directory.
+
+    Checks the ``BIOSEA_REPO_ROOT`` environment variable first so that
+    containerised or installed deployments can override the default
+    heuristic (three levels above this file in the source tree).
+    """
+    env = os.environ.get("BIOSEA_REPO_ROOT")
+    if env:
+        return Path(env)
     return Path(__file__).resolve().parents[3]
 
 
