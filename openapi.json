@@ -1,0 +1,413 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Bio Sea Pearl API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Read Root",
+        "operationId": "read_root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/align": {
+      "post": {
+        "summary": "Align Endpoint",
+        "operationId": "align_endpoint_align_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlignRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Align Endpoint Align Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/markov": {
+      "post": {
+        "summary": "Markov Endpoint",
+        "operationId": "markov_endpoint_markov_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarkovRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Markov Endpoint Markov Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/distance": {
+      "post": {
+        "summary": "Distance Endpoint",
+        "operationId": "distance_endpoint_distance_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DistanceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Distance Endpoint Distance Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/kmer": {
+      "post": {
+        "summary": "Kmer Endpoint",
+        "operationId": "kmer_endpoint_kmer_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KmerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Kmer Endpoint Kmer Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bwt/search": {
+      "post": {
+        "summary": "Bwt Search Endpoint",
+        "operationId": "bwt_search_endpoint_bwt_search_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BWTRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Bwt Search Endpoint Bwt Search Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AlignRequest": {
+        "properties": {
+          "fasta1": {
+            "type": "string",
+            "title": "Fasta1"
+          },
+          "fasta2": {
+            "type": "string",
+            "title": "Fasta2"
+          },
+          "matrix": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Matrix"
+          },
+          "mode": {
+            "type": "string",
+            "title": "Mode",
+            "default": "global"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fasta1",
+          "fasta2"
+        ],
+        "title": "AlignRequest"
+      },
+      "BWTRequest": {
+        "properties": {
+          "sequence": {
+            "type": "string",
+            "title": "Sequence"
+          },
+          "pattern": {
+            "type": "string",
+            "title": "Pattern"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sequence",
+          "pattern"
+        ],
+        "title": "BWTRequest"
+      },
+      "DistanceRequest": {
+        "properties": {
+          "seq1": {
+            "type": "string",
+            "title": "Seq1"
+          },
+          "seq2": {
+            "type": "string",
+            "title": "Seq2"
+          },
+          "metric": {
+            "type": "string",
+            "title": "Metric",
+            "default": "hamming"
+          }
+        },
+        "type": "object",
+        "required": [
+          "seq1",
+          "seq2"
+        ],
+        "title": "DistanceRequest"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "KmerRequest": {
+        "properties": {
+          "sequence": {
+            "type": "string",
+            "title": "Sequence"
+          },
+          "k": {
+            "type": "integer",
+            "title": "K"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sequence",
+          "k"
+        ],
+        "title": "KmerRequest"
+      },
+      "MarkovRequest": {
+        "properties": {
+          "fasta": {
+            "type": "string",
+            "title": "Fasta"
+          },
+          "length": {
+            "type": "integer",
+            "title": "Length"
+          },
+          "start": {
+            "type": "string",
+            "title": "Start",
+            "default": "A"
+          },
+          "order": {
+            "type": "integer",
+            "title": "Order",
+            "default": 1
+          },
+          "method": {
+            "type": "string",
+            "title": "Method",
+            "default": "alias"
+          },
+          "pseudocount": {
+            "type": "integer",
+            "title": "Pseudocount",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "fasta",
+          "length"
+        ],
+        "title": "MarkovRequest"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
