@@ -2,22 +2,22 @@
 title: Overview
 ---
 
-<div align="center">
+<div style="text-align: center;">
 
-<img src="assets/logo.svg" width="300">
+<img src="../assets/logo.svg" width="300">
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19435099.svg)](https://doi.org/10.5281/zenodo.19435099)
-[![PyPI version](https://img.shields.io/pypi/v/bio-sea-pearl.svg)](https://pypi.org/project/bio-sea-pearl/)
-[![Python versions](https://img.shields.io/pypi/pyversions/bio-sea-pearl.svg)](https://pypi.org/project/bio-sea-pearl/)
-[![PyPI downloads](https://img.shields.io/pypi/dm/bio-sea-pearl.svg)](https://pypi.org/project/bio-sea-pearl/)
-[![GitHub release](https://img.shields.io/github/v/release/bibymaths/bio-sea-pearl)](https://github.com/bibymaths/bio-sea-pearl/releases)
-[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://bibymaths.github.io/bio-sea-pearl/)
-[![License](https://img.shields.io/github/license/bibymaths/bio-sea-pearl)](LICENSE)
-[![CI](https://img.shields.io/github/actions/workflow/status/bibymaths/bio-sea-pearl/release.yml?branch=main&label=release)](https://github.com/bibymaths/bio-sea-pearl/actions/workflows/release.yml)
-[![Docs workflow](https://img.shields.io/github/actions/workflow/status/bibymaths/bio-sea-pearl/docs.yml?branch=main&label=docs)](https://github.com/bibymaths/bio-sea-pearl/actions/workflows/docs.yml)
-[![GHCR](https://img.shields.io/badge/container-ghcr.io-blue)](https://github.com/bibymaths/bio-sea-pearl/pkgs/container/bio-sea-pearl)
-[![Docker pulls](https://img.shields.io/badge/docker-GHCR-blue)](https://github.com/bibymaths/bio-sea-pearl/pkgs/container/bio-sea-pearl)
-
+<p>
+<a href="https://doi.org/10.5281/zenodo.19435099"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.19435099.svg"></a>
+<a href="https://pypi.org/project/bio-sea-pearl/"><img src="https://img.shields.io/pypi/v/bio-sea-pearl.svg"></a>
+<a href="https://pypi.org/project/bio-sea-pearl/"><img src="https://img.shields.io/pypi/pyversions/bio-sea-pearl.svg"></a>
+<a href="https://pypi.org/project/bio-sea-pearl/"><img src="https://img.shields.io/pypi/dm/bio-sea-pearl.svg"></a>
+<a href="https://github.com/bibymaths/bio-sea-pearl/releases"><img src="https://img.shields.io/github/v/release/bibymaths/bio-sea-pearl"></a>
+<a href="https://bibymaths.github.io/bio-sea-pearl/"><img src="https://img.shields.io/badge/docs-GitHub%20Pages-blue"></a>
+<a href="https://github.com/bibymaths/bio-sea-pearl/blob/main/LICENSE"><img src="https://img.shields.io/github/license/bibymaths/bio-sea-pearl"></a>
+<a href="https://github.com/bibymaths/bio-sea-pearl/actions/workflows/release.yml"><img src="https://img.shields.io/github/actions/workflow/status/bibymaths/bio-sea-pearl/release.yml?branch=main&label=release"></a>
+<a href="https://github.com/bibymaths/bio-sea-pearl/actions/workflows/docs.yml"><img src="https://img.shields.io/github/actions/workflow/status/bibymaths/bio-sea-pearl/docs.yml?branch=main&label=docs"></a>
+<a href="https://github.com/bibymaths/bio-sea-pearl/pkgs/container/bio-sea-pearl"><img src="https://img.shields.io/badge/container-ghcr.io-blue"></a>
+</p>
 
 </div>
 
