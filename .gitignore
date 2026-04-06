@@ -12,6 +12,11 @@ _Inline/
 *.iml
 *.ipr
 
+__pycache__/
+
+tmp/
+
+
 # Python
 __pycache__/
 *.pyc
