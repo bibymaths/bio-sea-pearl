@@ -1,8 +1,10 @@
 site_name: Bio Sea Pearl
 site_url: https://bibymaths.github.io/bio-sea-pearl/
+site_description: Sequence analysis and bioinformatics utilities in Python and Perl.
 
 repo_name: bibymaths/bio-sea-pearl
 repo_url: https://github.com/bibymaths/bio-sea-pearl
+edit_uri: edit/main/docs/
 
 theme:
   name: material
@@ -29,32 +31,68 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
 
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+    - toc.follow
+
+  icon:
+    repo: fontawesome/brands/github
+
 plugins:
-  - search
+  - search:
+      separator: '[\s\-\.]+'
   - swagger-ui-tag:
       validatorUrl: none
 
 nav:
   - Home: index.md
-  - Overview:
-      - Architecture: architecture.md
-      - API Reference: api.md
-      - CLI Usage: cli.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Quickstart: getting-started/quickstart.md
+  - Interfaces:
+      - CLI Reference: cli.md
+      - REST API: api.md
+  - Architecture: architecture.md
   - Modules:
-      - Alignment: alignment.md
-      - Markov: markov.md
-      - SeqTools: seqtools.md
-      - BWT & FM-index: bio_sea_pearl.md
+      - Alignment: modules/alignment.md
+      - Markov Chains: modules/markov.md
+      - Sequence Tools: modules/seqtools.md
+      - BWT & FM-index: modules/bwt.md
+  - Developer Guide:
+      - Extending the Toolkit: developer/extending.md
+      - Troubleshooting: developer/troubleshooting.md
 
 markdown_extensions:
   - admonition
+  - attr_list
+  - md_in_html
   - toc:
       permalink: true
+      toc_depth: 3
   - pymdownx.superfences
   - pymdownx.details
-  - pymdownx.highlight
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.keys
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - tables
+  - def_list
 
 copyright: >
   Copyright &copy; 2026 <a href="https://bibymaths.github.io">Abhinav Mishra</a>.
