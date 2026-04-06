@@ -8,7 +8,6 @@ on:
 permissions:
   contents: write
   packages: write
-  id-token: write
 
 jobs:
   test:
@@ -31,24 +30,9 @@ jobs:
       - name: Run tests
         run: pytest --tb=short -v
 
-  github-release:
+  build:
     needs: test
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          generate_release_notes: true
-
-  pypi-publish:
-    needs: test
-    runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/project/bio-sea-pearl/
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -59,13 +43,69 @@ jobs:
           python-version: "3.12"
 
       - name: Install build tools
-        run: pip install build
+        run: pip install build twine
 
       - name: Build package
         run: python -m build
 
+      - name: Check distributions
+        run: python -m twine check dist/*
+
+      - name: Upload dist artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-dist
+          path: dist/*
+
+  github-release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download dist artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: python-dist
+          path: dist
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: dist/*
+
+  pypi-publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/bio-sea-pearl/
+    steps:
+      - name: Download dist artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: python-dist
+          path: dist
+
+      - name: Check if version already on PyPI
+        id: pypi_check
+        run: |
+          VERSION=$(python -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); print(d['project']['version'])")
+          PKG="bio-sea-pearl"
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://pypi.org/pypi/${PKG}/${VERSION}/json)
+          if [ "$STATUS" = "200" ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Version ${VERSION} already on PyPI; skipping upload"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Publish to PyPI
+        if: steps.pypi_check.outputs.exists == 'false'
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          skip-existing: true
+          verbose: true
 
   docker-publish:
     needs: test
