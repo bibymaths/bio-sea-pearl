@@ -1,42 +1,130 @@
 ---
-title: Overview
+title: Bio Sea Pearl
 ---
 
 <div style="text-align: center;">
 
-<img src="../assets/logo.svg" width="300">
+<img src="../assets/logo.svg" width="260" alt="Bio Sea Pearl">
 
 <p>
-<a href="https://doi.org/10.5281/zenodo.19435099"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.19435099.svg"></a>
-<a href="https://pypi.org/project/bio-sea-pearl/"><img src="https://img.shields.io/pypi/v/bio-sea-pearl.svg"></a>
-<a href="https://pypi.org/project/bio-sea-pearl/"><img src="https://img.shields.io/pypi/pyversions/bio-sea-pearl.svg"></a>
-<a href="https://pypi.org/project/bio-sea-pearl/"><img src="https://img.shields.io/pypi/dm/bio-sea-pearl.svg"></a>
-<a href="https://github.com/bibymaths/bio-sea-pearl/releases"><img src="https://img.shields.io/github/v/release/bibymaths/bio-sea-pearl"></a>
-<a href="https://bibymaths.github.io/bio-sea-pearl/"><img src="https://img.shields.io/badge/docs-GitHub%20Pages-blue"></a>
-<a href="https://github.com/bibymaths/bio-sea-pearl/blob/main/LICENSE"><img src="https://img.shields.io/github/license/bibymaths/bio-sea-pearl"></a>
-<a href="https://github.com/bibymaths/bio-sea-pearl/actions/workflows/release.yml"><img src="https://img.shields.io/github/actions/workflow/status/bibymaths/bio-sea-pearl/release.yml?branch=main&label=release"></a>
-<a href="https://github.com/bibymaths/bio-sea-pearl/actions/workflows/docs.yml"><img src="https://img.shields.io/github/actions/workflow/status/bibymaths/bio-sea-pearl/docs.yml?branch=main&label=docs"></a>
-<a href="https://github.com/bibymaths/bio-sea-pearl/pkgs/container/bio-sea-pearl"><img src="https://img.shields.io/badge/container-ghcr.io-blue"></a>
+<a href="https://doi.org/10.5281/zenodo.19435099"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.19435099.svg" alt="DOI"></a>
+<a href="https://pypi.org/project/bio-sea-pearl/"><img src="https://img.shields.io/pypi/v/bio-sea-pearl.svg" alt="PyPI version"></a>
+<a href="https://pypi.org/project/bio-sea-pearl/"><img src="https://img.shields.io/pypi/pyversions/bio-sea-pearl.svg" alt="Python versions"></a>
+<a href="https://github.com/bibymaths/bio-sea-pearl/releases"><img src="https://img.shields.io/github/v/release/bibymaths/bio-sea-pearl" alt="Release"></a>
+<a href="https://github.com/bibymaths/bio-sea-pearl/blob/main/LICENSE"><img src="https://img.shields.io/github/license/bibymaths/bio-sea-pearl" alt="License"></a>
+<a href="https://github.com/bibymaths/bio-sea-pearl/pkgs/container/bio-sea-pearl"><img src="https://img.shields.io/badge/container-ghcr.io-blue" alt="Container"></a>
 </p>
 
 </div>
 
-This toolkit brings together a collection of Python and Perl utilities for sequence analysis and stochastic modelling.
-It grew from practical needs in bioinformatics: aligning DNA or protein sequences, exploring Markov chain behaviour and
-building efficient text indexes. As a result it includes both modern Python code and a mature body of Perl modules.
+# Bio Sea Pearl
 
-The project is organised into a few high‑level components:
+**Sequence analysis and bioinformatics utilities in Python and Perl.**
 
-* **Alignment** – dynamic‑programming algorithms for global, local and longest common subsequence (LCS) alignments.
-  Python scripts (`align.py`, `alignfm.py`, `transform.py`) implement affine gap penalties, parallelisation and various
-  output modes. Perl scripts (`align.pl`, `dotplot.pl`, `traceplot.pl`) provide plotting and compatibility with earlier
-  versions. Scoring matrices in `alignment/scoring/` include BLOSUM, PAM and VTML families for protein alignment.
-* **Markov** – high‑precision Markov chain simulators implemented in Perl.  `MarkovChainFirstOrder.pm` and
-  `MarkovChainHigherOrder.pm` build transition tables from FASTA sequences, support pseudocount smoothing and provide
-  fast sampling via the alias method or binary search. Utilities like `randomwalk.pl` and `validate.pl` generate random
-  walks or evaluate hidden Markov models.
-* **SeqTools** – a collection of Perl modules for common sequence operations. Modules implement pattern matching (
-  Boyer–Moore search), FASTA parsing, Hamming and Levenshtein distances, k‑mer generation and more.
-* **Burrows–Wheeler Transform (BWT) and FM‑index** – pure Python implementations of suffix arrays, the BWT and the
-  FM‑index are provided in `src/bio_sea_pearl/bwt`. These enable fast substring queries and serve as a foundation for
-  compressed text indices.
+Bio Sea Pearl is a dual-language bioinformatics toolkit that integrates mature Perl implementations with a modern Python interface. It provides pairwise sequence alignment, Markov chain simulation, sequence distance metrics, k-mer analysis, and full-text indexing via the Burrows–Wheeler Transform — accessible through a unified CLI, a REST API, or direct Python imports.
+
+---
+
+## Core capabilities
+
+| Subsystem | What it does | Implementation |
+|-----------|-------------|----------------|
+| [**Alignment**](modules/alignment.md) | Global, local, and LCS pairwise alignment with affine gap penalties | Python + Perl (Gotoh algorithm) |
+| [**Markov Chains**](modules/markov.md) | Train transition models on sequences and sample random walks | Perl (first-order and higher-order) |
+| [**Sequence Tools**](modules/seqtools.md) | Hamming distance, Levenshtein distance, k-mer counting, pattern search | Python (native) + Perl (Inline C) |
+| [**BWT & FM-index**](modules/bwt.md) | Suffix arrays, Burrows–Wheeler Transform, FM-index substring search | Pure Python |
+
+---
+
+## Three ways to use it
+
+=== "CLI"
+
+    ```bash
+    biosea seqtools hamming ACGTACGT ACGTACGA
+    biosea bwt search --sequence ACGTACGT --pattern CGT
+    biosea align seq1.fa seq2.fa --mode global
+    ```
+
+=== "REST API"
+
+    ```bash
+    curl -X POST http://localhost:8000/distance \
+        -H "Content-Type: application/json" \
+        -d '{"seq1": "kitten", "seq2": "sitting", "metric": "levenshtein"}'
+    ```
+
+=== "Python"
+
+    ```python
+    from bio_sea_pearl.api import hamming_distance, build_fm_index, search_fm_index
+
+    print(hamming_distance("ACGT", "AGGT"))  # 1
+
+    idx = build_fm_index("ACGTACGT")
+    print(search_fm_index(idx, "CGT"))       # [1, 5]
+    ```
+
+---
+
+## Architecture at a glance
+
+```
+              ┌──────────┐    ┌──────────────┐
+              │  biosea  │    │ FastAPI       │
+              │   CLI    │    │ REST server   │
+              └────┬─────┘    └──────┬────────┘
+                   │                 │
+                   └────────┬────────┘
+                            │
+                   ┌────────▼────────┐
+                   │   API layer     │
+                   │ (bio_sea_pearl) │
+                   └───┬─────────┬───┘
+                       │         │
+              ┌────────▼──┐  ┌───▼──────────┐
+              │  Wrappers │  │ Pure Python   │
+              │ (Perl via │  │ (BWT, seqtools│
+              │ subprocess)│  │  distances)   │
+              └────┬──────┘  └──────────────┘
+                   │
+          ┌────────▼────────┐
+          │  Perl scripts   │
+          │  & modules      │
+          │ (alignment,     │
+          │  markov,        │
+          │  seqtools)      │
+          └─────────────────┘
+```
+
+The Python API layer is the single dispatch point. Whether a request arrives via the CLI, the REST API, or a direct import, it flows through the same API functions in `src/bio_sea_pearl/api/`. See [Architecture](architecture.md) for the full breakdown.
+
+---
+
+## Quick start
+
+```bash
+pip install bio-sea-pearl
+biosea --help
+```
+
+:material-arrow-right: [Installation guide](getting-started/installation.md) · [Quickstart tutorial](getting-started/quickstart.md)
+
+---
+
+## Documentation map
+
+| Section | Description |
+|---------|-------------|
+| [Installation](getting-started/installation.md) | Install from PyPI, source, or Docker |
+| [Quickstart](getting-started/quickstart.md) | First commands across all subsystems |
+| [CLI Reference](cli.md) | Complete `biosea` command documentation |
+| [REST API](api.md) | Endpoint schemas and interactive docs |
+| [Architecture](architecture.md) | Layers, dispatch, data flow, repo layout |
+| [Alignment](modules/alignment.md) | Gotoh DP, scoring matrices, parallelisation |
+| [Markov Chains](modules/markov.md) | Transition models, sampling, random walks |
+| [Sequence Tools](modules/seqtools.md) | Distances, k-mers, Boyer–Moore search |
+| [BWT & FM-index](modules/bwt.md) | Suffix arrays, BWT, backward search |
+| [Extending](developer/extending.md) | Adding modules, porting Perl to Python |
+| [Troubleshooting](developer/troubleshooting.md) | Common errors and failure modes |
+
