@@ -89,14 +89,38 @@ jobs:
       - name: Check if version already on PyPI
         id: pypi_check
         run: |
-          VERSION=$(python -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); print(d['project']['version'])")
+          set -euo pipefail
+      
+          echo "[INFO] Current directory:"
+          pwd
+          echo "[INFO] Listing files:"
+          ls -la
+      
+          if [ ! -f "pyproject.toml" ]; then
+            echo "[ERROR] pyproject.toml not found"
+            exit 1
+          fi
+      
+          VERSION=$(python - <<'PY'
+      import tomllib
+      with open("pyproject.toml", "rb") as f:
+          print(tomllib.load(f)["project"]["version"])
+      PY
+      )
+      
           PKG="bio-sea-pearl"
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://pypi.org/pypi/${PKG}/${VERSION}/json)
+
+          echo "[INFO] Package: $PKG"
+          echo "[INFO] Version: $VERSION"
+
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://pypi.org/pypi/${PKG}/${VERSION}/json")
+      
           if [ "$STATUS" = "200" ]; then
             echo "exists=true" >> "$GITHUB_OUTPUT"
-            echo "Version ${VERSION} already on PyPI; skipping upload"
+            echo "[INFO] Version ${VERSION} already exists on PyPI → skipping upload"
           else
             echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "[INFO] Version ${VERSION} not found on PyPI → will publish"
           fi
 
       - name: Publish to PyPI

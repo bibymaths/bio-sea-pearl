@@ -3,6 +3,7 @@
   "description": "Bio Sea Pearl is a hybrid Python and Perl bioinformatics toolkit for sequence alignment, Markov chain modeling, sequence distance metrics, k-mer counting, and FM-index-based search. It provides a unified Python CLI and REST API that wraps both native Python implementations and legacy Perl scripts.",
   "upload_type": "software",
   "access_right": "open",
+  "version": "0.1.1",
   "prereserve_doi": true,
   "creators": [
     {

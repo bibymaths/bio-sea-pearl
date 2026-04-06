@@ -1,6 +1,6 @@
 [project]
 name = "bio-sea-pearl"
-version = "0.1.0"
+version = "0.1.1"
 description = "Sequence analysis and bioinformatics utilities in Python and Perl."
 readme = "README.md"
 license = {text = "MIT"}
