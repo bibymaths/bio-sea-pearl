@@ -8,7 +8,7 @@ FM-index–based search — unified under a single Python CLI and API.
 ## Documentation
 
 * 📘 **Live Docs (GitHub Pages)**
-  `https://bibymaths.github.io/<repo-name>/`
+  <https://bibymaths.github.io/bio-sea-pearl/>
 
 * 📂 Local Docs
   Located in `docs/`
@@ -17,35 +17,33 @@ FM-index–based search — unified under a single Python CLI and API.
 
 ## Quick Start
 
-### 1. Unpack
-
-Extract the repository:
+### 1. Clone
 
 ```bash
-unzip bio-sea-pearl-main-full.zip
-cd bio-sea-pearl-main 
-
-or 
-
 git clone https://github.com/bibymaths/bio-sea-pearl.git
+cd bio-sea-pearl
 ```
 
 ---
 
 ### 2. Install Dependencies
 
-This project uses **Python ≥ 3.13** and **Poetry**.
+This project uses **Python ≥ 3.10** and is built with [Hatch](https://hatch.pypa.io/).
+
+#### With uv (recommended)
 
 ```bash
-pip install poetry
-poetry install
+uv pip install -e ".[dev]"
 ```
 
-Alternative:
+#### With pip
 
 ```bash
-pip install .
+pip install -e ".[dev]"
 ```
+
+> **Note:** Some features (alignment, Markov generation) delegate to Perl
+> scripts at runtime. Install Perl ≥ 5.26 if you need those features.
 
 ---
 
@@ -54,13 +52,7 @@ pip install .
 The unified CLI entrypoint is:
 
 ```bash
-biosea
-```
-
-Get help:
-
-```bash
-poetry run biosea --help
+biosea --help
 ```
 
 ---
@@ -70,7 +62,7 @@ poetry run biosea --help
 ### Alignment
 
 ```bash
-poetry run biosea align seq1.fa seq2.fa \
+biosea align seq1.fa seq2.fa \
   --matrix alignment/scoring/blosum62.mat \
   --mode global
 ```
@@ -83,7 +75,7 @@ poetry run biosea align seq1.fa seq2.fa \
 Optionally, you can generate dotplot in svg format:
 
 ```bash
-perl alignment/bin/dotplot.pl align.matrix.tsv dotplot.svg 
+perl alignment/bin/dotplot.pl align.matrix.tsv dotplot.svg
 ```
 
 ---
@@ -91,7 +83,7 @@ perl alignment/bin/dotplot.pl align.matrix.tsv dotplot.svg
 ### Markov Chain
 
 ```bash
-poetry run biosea markov \
+biosea markov \
   --fasta seq1.fa \
   --length 100 \
   --start A \
@@ -115,13 +107,13 @@ For higher-order models:
 
 ```bash
 # Hamming distance
-poetry run biosea seqtools hamming ACGT AGGT
+biosea seqtools hamming ACGT AGGT
 
 # Levenshtein distance
-poetry run biosea seqtools levenshtein kitten sitting
+biosea seqtools levenshtein kitten sitting
 
 # k-mer counts
-poetry run biosea seqtools kmer ACGTACGT --k 3
+biosea seqtools kmer ACGTACGT --k 3
 ```
 
 ---
@@ -129,28 +121,28 @@ poetry run biosea seqtools kmer ACGTACGT --k 3
 ### BWT / FM-Index Search
 
 ```bash
-poetry run biosea bwt search \
+biosea bwt search \
   --sequence ACGTACGT \
   --pattern CGT
 ```
 
 ---
 
-## REST API - For Very Large Sequences
+## REST API
 
 Start the FastAPI server:
 
 ```bash
-poetry run uvicorn api.server:app --reload
+uvicorn api.server:app --reload
 ```
 
 Endpoints:
 
-* `/align`
-* `/markov`
-* `/distance`
-* `/kmer`
-* `/bwt/search`
+* `POST /align`
+* `POST /markov`
+* `POST /distance`
+* `POST /kmer`
+* `POST /bwt/search`
 
 Example:
 
@@ -158,6 +150,38 @@ Example:
 curl -X POST http://localhost:8000/distance \
   -H "Content-Type: application/json" \
   -d '{"seq1": "kitten", "seq2": "sitting", "metric": "levenshtein"}'
+```
+
+Interactive API documentation is available at <http://localhost:8000/docs>.
+
+---
+
+## Docker
+
+### Build and start
+
+```bash
+./docker_up.sh
+```
+
+### Stop and remove
+
+```bash
+./docker_down.sh
+```
+
+### Interactive shell
+
+```bash
+./docker_interactive.sh
+```
+
+### Manual Docker commands
+
+```bash
+docker compose up --build -d
+docker compose exec biosea biosea --help
+docker compose down
 ```
 
 ---
@@ -207,8 +231,37 @@ This design:
 ## Running Tests
 
 ```bash
-poetry run pytest
+pytest
 ```
+
+---
+
+## Building
+
+```bash
+pip install build
+python -m build
+```
+
+This produces a source distribution and wheel in `dist/`.
+
+---
+
+## Releasing
+
+Releases are automated via GitHub Actions. Push a tag to trigger the workflow:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+This will:
+
+1. Run the test suite
+2. Create a GitHub release
+3. Build and publish the package to PyPI
+4. Build and push multi-arch Docker images to `ghcr.io/bibymaths/bio-sea-pearl`
 
 ---
 
@@ -244,33 +297,9 @@ Fix:
 ### CLI not found
 
 ```bash
-poetry run biosea --help
-```
-
-or:
-
-```bash
 pip install -e .
 biosea --help
 ```
-
----
-
-## Future Work
-
-See:
-
-```
-TODO.md
-```
-
-Includes:
-
-* Full Python migration
-* Performance optimization
-* Parallel execution
-* GPU acceleration
-* API scaling
 
 ---
 

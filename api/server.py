@@ -8,14 +8,18 @@ for example:
 
 Endpoints:
 
-* POST `/align` – align two sequences given FASTA file contents.
-* POST `/markov` – generate a random walk from a Markov model.
-* POST `/distance` – compute Hamming or Levenshtein distance between two strings.
-* POST `/kmer` – compute k‑mer counts of a sequence.
-* POST `/bwt/search` – search for a pattern within a sequence via the FM‑index.
+* POST ``/align``  – align two sequences given FASTA file contents.
+* POST ``/markov`` – generate a random walk from a Markov model.
+* POST ``/distance`` – compute Hamming or Levenshtein distance between two strings.
+* POST ``/kmer``   – compute k-mer counts of a sequence.
+* POST ``/bwt/search`` – search for a pattern within a sequence via the FM-index.
 """
 
 from __future__ import annotations
+
+import logging
+import tempfile
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
@@ -30,11 +34,15 @@ from bio_sea_pearl.api import (
     search_fm_index,
 )
 
+logger = logging.getLogger(__name__)
+
 app = FastAPI(title="Bio Sea Pearl API", version="0.1.0")
+
 
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Bio Sea Pearl API! Go to /docs to test the endpoints."}
+
 
 class AlignRequest(BaseModel):
     fasta1: str
@@ -55,7 +63,7 @@ class MarkovRequest(BaseModel):
 class DistanceRequest(BaseModel):
     seq1: str
     seq2: str
-    metric: str = "hamming"  # or 'levenshtein'
+    metric: str = "hamming"
 
 
 class KmerRequest(BaseModel):
@@ -68,23 +76,62 @@ class BWTRequest(BaseModel):
     pattern: str
 
 
+def _write_temp_fasta(content: str, suffix: str = ".fa") -> Path:
+    """Write FASTA content to a named temporary file and return its path.
+
+    The caller is responsible for cleanup.
+    """
+    tmp = tempfile.NamedTemporaryFile(mode="w", suffix=suffix, delete=False)
+    tmp.write(content)
+    tmp.flush()
+    tmp.close()
+    return Path(tmp.name)
+
+
 @app.post("/align")
 def align_endpoint(req: AlignRequest) -> dict:
+    tmp1: Path | None = None
+    tmp2: Path | None = None
     try:
-        result = align_sequences(req.fasta1, req.fasta2, matrix=req.matrix, mode=req.mode)
+        tmp1 = _write_temp_fasta(req.fasta1)
+        tmp2 = _write_temp_fasta(req.fasta2)
+        result = align_sequences(str(tmp1), str(tmp2), matrix=req.matrix, mode=req.mode)
         return {"result": result.strip()}
+    except HTTPException:
+        raise
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc))
+        logger.exception("Unexpected error in /align")
+        raise HTTPException(status_code=500, detail="Internal server error") from exc
+    finally:
+        for p in (tmp1, tmp2):
+            if p is not None:
+                p.unlink(missing_ok=True)
 
 
 @app.post("/markov")
 def markov_endpoint(req: MarkovRequest) -> dict:
+    tmp: Path | None = None
     try:
-        walk = generate_walk(req.fasta, req.length, start=req.start, order=req.order, method=req.method,
+        tmp = _write_temp_fasta(req.fasta)
+        walk = generate_walk(str(tmp), req.length, start=req.start, order=req.order, method=req.method,
                              pseudocount=req.pseudocount)
         return {"walk": walk.strip()}
+    except HTTPException:
+        raise
+    except (ValueError, TypeError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc))
+        logger.exception("Unexpected error in /markov")
+        raise HTTPException(status_code=500, detail="Internal server error") from exc
+    finally:
+        if tmp is not None:
+            tmp.unlink(missing_ok=True)
 
 
 @app.post("/distance")
@@ -99,8 +146,13 @@ def distance_endpoint(req: DistanceRequest) -> dict:
     try:
         d = func(req.seq1, req.seq2)
         return {"distance": d}
+    except HTTPException:
+        raise
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc))
+        logger.exception("Unexpected error in /distance")
+        raise HTTPException(status_code=500, detail="Internal server error") from exc
 
 
 @app.post("/kmer")
@@ -108,8 +160,11 @@ def kmer_endpoint(req: KmerRequest) -> dict:
     try:
         counts = kmer_counts(req.sequence, req.k)
         return {"counts": counts}
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc))
+        logger.exception("Unexpected error in /kmer")
+        raise HTTPException(status_code=500, detail="Internal server error") from exc
 
 
 @app.post("/bwt/search")
@@ -119,4 +174,5 @@ def bwt_search_endpoint(req: BWTRequest) -> dict:
         positions = search_fm_index(index, req.pattern)
         return {"positions": positions}
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc))
+        logger.exception("Unexpected error in /bwt/search")
+        raise HTTPException(status_code=500, detail="Internal server error") from exc

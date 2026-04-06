@@ -31,10 +31,13 @@ def hamming_distance(a: str, b: str) -> int:
     """Compute the Hamming distance between two sequences.
 
     Falls back to the Perl implementation if the Python port is unavailable.
+    Propagates ``ValueError`` (e.g. unequal lengths) raised by the Python port.
     """
     if _PY_PORT_AVAILABLE:
         try:
             return _hamming_py(a, b)
+        except ValueError:
+            raise
         except Exception:
             pass
     return distance_hamming_perl(a, b)
@@ -48,19 +51,24 @@ def levenshtein_distance(a: str, b: str) -> int:
     if _PY_PORT_AVAILABLE:
         try:
             return _levenshtein_py(a, b)
+        except ValueError:
+            raise
         except Exception:
             pass
     return distance_levenshtein_perl(a, b)
 
 
 def kmer_counts(seq: str, k: int) -> Dict[str, int]:
-    """Compute k‑mer counts for a sequence.
+    """Compute k-mer counts for a sequence.
 
     Falls back to the Perl implementation if the Python port is unavailable.
+    Propagates ``ValueError`` (e.g. k <= 0 or k > len(seq)) from the Python port.
     """
     if _PY_PORT_AVAILABLE:
         try:
             return _kmer_py(seq, k)
+        except ValueError:
+            raise
         except Exception:
             pass
     return kmer_counts_perl(seq, k)

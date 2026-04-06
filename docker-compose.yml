@@ -1,0 +1,12 @@
+services:
+  biosea:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ghcr.io/bibymaths/bio-sea-pearl:latest
+    container_name: biosea
+    ports:
+      - "8000:8000"
+    environment:
+      - BIOSEA_REPO_ROOT=/app
+    restart: unless-stopped
