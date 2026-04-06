@@ -29,11 +29,6 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
 
-extra:
-  social:
-    - icon: fontawesome/brands/github
-    - link: https://github.com/bibymaths/bio-sea-pearl
-
 nav:
   - Home: index.md
   - Overview:
